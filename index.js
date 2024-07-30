@@ -55,7 +55,7 @@ if (x) {
   );
 
   setTimeout(() => {
-    OneMinTrx.insertOneMinTrxResultByCron();
+    // OneMinTrx.insertOneMinTrxResultByCron();
     OneMinTrx.generatedTimeEveryAfterEveryOneMinTRX(io);
     OneMinWinGo.generatedTimeEveryAfterEveryOneMin(io);
     ThreeMinWinGo.generatedTimeEveryAfterEveryThreeMin(io);
