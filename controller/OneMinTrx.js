@@ -33,11 +33,11 @@ exports.generatedTimeEveryAfterEveryOneMinTRX = (io) => {
   }
 };
 
-exports.insertOneMinTrxResultByCron = () => {
+exports.insertOneMinTrxResultByCron = async(request,response) => {
   let isAlreadyHit = "";
   let result = "";
   let manual_result = "";
-  const insert = schedule.schedule("48 * * * * *", async function () {
+  // const insert = schedule.schedule("48 * * * * *", async function () {
     const datetoAPISend = parseInt(new Date().getTime().toString());
     const actualtome = soment.tz("Asia/Kolkata");
     const time = actualtome.add(5, "hours").add(30, "minutes").valueOf();
@@ -82,6 +82,7 @@ exports.insertOneMinTrxResultByCron = () => {
                       }
                     }
                   );
+                 
                 } catch (e) {
                   console.log(e);
                 }
@@ -107,11 +108,17 @@ exports.insertOneMinTrxResultByCron = () => {
               );
             });
         }, [4000]));
+    return response.status(200).json({
+      msg:"hiii"
+    })
     } catch (e) {
       clearTimeout(kill_time);
       console.log(e);
+      return response.status(400).json({
+        msg:"hiii"
+      })
     }
-  });
+  // });
 };
 
 async function getGeneratedTronResultIfFailButRandom(
@@ -136,7 +143,7 @@ async function getGeneratedTronResultIfFailButRandom(
         console.log("Data inserted successfully: ", results);
       }
     });
-    isAlreadyHit = prevalue;
+    // isAlreadyHit = prevalue;
   } catch (e) {
     console.log(e);
   }
@@ -191,7 +198,8 @@ async function insertIntoTrxonetable(manual_result, time, obj, callback) {
     }
   }
   try {
-    const query = `CALL sp_insert_trx_one_min_result(?,?,?,?,?,?,?);`;
+    // const query = `CALL sp_insert_trx_one_min_result(?,?,?,?,?,?,?);`;
+    const query = `CALL sp_inert_trx_testing_result_OVI(?,?,?,?,?,?,?);`;
     await queryDb(query, [
       Number(num + 1),
       String(moment(time).format("HH:mm:ss")),

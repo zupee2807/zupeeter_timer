@@ -147,3 +147,45 @@ exports.placeBetTrx = async (req, res) => {
     return failMsg("Something went worng in node api");
   }
 };
+
+exports.get_Royality_Date = async (req, res) => {
+  const { user_id} = req.query;
+  
+  if (!user_id)
+    return res.status(200).json({
+      msg: `Everything is required`,
+    });
+
+  if (user_id && Number(user_id) <= 0) {
+    return res.status(200).json({
+      msg: `Please refresh your page`,
+    });
+  }
+
+   const id = Number(user_id);
+   if(typeof id !== 'number')
+    return res.status(200).json({
+      msg: `Please refresh your page`,
+    });
+
+  try {
+    const query = `CALL sp_for_reamining_days_to_achive_ro_club(?,@remaining_days,@type_of_club); SELECT @remaining_days,@type_of_club; `
+    await queryDb(query,[id]).then((result)=>{
+      console.log(result)
+      return res.status(200).json({
+        msg:"Data found successfully",
+        data:{
+          date:result?.[1]?.[0]?.["@remaining_days"],
+          club:result?.[1]?.[0]?.["@type_of_club"]
+        }
+      })
+    })  
+    .catch((e) => {
+        return res.status(500).json({
+          msg: `Something went wrong api calling`,
+        });
+      });
+  } catch (e) {
+    return failMsg("Something went worng in node api");
+  }
+};
