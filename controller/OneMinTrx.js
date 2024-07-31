@@ -11,23 +11,24 @@ exports.generatedTimeEveryAfterEveryOneMinTRX = (io) => {
   let clear_interval;
 
   try {
-    // const job = schedule.schedule("* * * * * *", function () {
-    function handleTimer() {
-      clear_interval = setInterval(() => {
+    const job = schedule.schedule("* * * * * *", function () {
+    // function handleTimer() { 
+    //   clear_interval = setInterval(() => {
         const currentTime = new Date();
         const timeToSend =
           currentTime.getSeconds() > 0
             ? 60 - currentTime.getSeconds()
             : currentTime.getSeconds();
         io.emit("onemintrx", timeToSend);
+        // console.log(timeToSend)
         if (timeToSend === 0) {
-          clearInterval(clear_interval);
-          handleTimer();
+          // clearInterval(clear_interval);
+          // handleTimer();
         }
-      }, 1000);
-    }
-    handleTimer();
-    // });
+      // }, 1000);
+    // }
+    // handleTimer();
+    });
   } catch (e) {
     console.log(e);
   }
