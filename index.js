@@ -37,6 +37,8 @@ app.use(express.json());
 
 const PORT = process.env.PORT || 4000;
 const allRoutes = require("./routes/Routes");
+const { queryDb } = require("./helper/adminHelper");
+const {aviator_Start_function } = require("./controller/aviatorStart");
 
 app.use("", allRoutes);
 io.on("connection", (socket) => {});
@@ -71,6 +73,8 @@ const finalRescheduleJob = schedule.scheduleJob(
     FiveMinTrx.generatedTimeEveryAfterEveryFiveMinTRX(io);
   }
 );
+
+// aviator_Start_function(io);
 
 app.get("/", (req, res) => {
   res.send(`<h1>server running at port=====> ${PORT}</h1>`);
