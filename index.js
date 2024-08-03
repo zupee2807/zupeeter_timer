@@ -38,7 +38,7 @@ app.use(express.json());
 const PORT = process.env.PORT || 4000;
 const allRoutes = require("./routes/Routes");
 const { queryDb } = require("./helper/adminHelper");
-const {aviator_Start_function } = require("./controller/aviatorStart");
+// const {aviator_Start_function } = require("./controller/aviatorStart");
 
 app.use("", allRoutes);
 io.on("connection", (socket) => {});
