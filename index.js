@@ -2,14 +2,9 @@ const express = require("express");
 const http = require("http");
 const { Server } = require("socket.io");
 const cors = require("cors");
-const todoRoutes = require("./routes/Routes");
 const moment = require("moment");
-// const soment = require("moment-timezone");
 require("dotenv").config();
 const schedule = require("node-schedule");
-// const { default: axios } = require("axios");
-// const mysql = require("mysql");
-// const { queryDb } = require("./helper/adminHelper");
 const OneMinTrx = require("./controller/OneMinTrx");
 const ThreeMinTrx = require("./controller/ThreeMinTrx");
 const FiveMinTrx = require("./controller/FiveMinTrx");
@@ -37,9 +32,6 @@ app.use(express.json());
 
 const PORT = process.env.PORT || 4000;
 const allRoutes = require("./routes/Routes");
-const { queryDb } = require("./helper/adminHelper");
-// const {aviator_Start_function } = require("./controller/aviatorStart");
-////////////////
 app.use("", allRoutes);
 io.on("connection", (socket) => {});
 
@@ -74,8 +66,7 @@ const finalRescheduleJob = schedule.scheduleJob(
   }
 );
 
-// aviator_Start_function(io);
-//
+
 app.get("/", (req, res) => {
   res.send(`<h1>server running at port=====> ${PORT}</h1>`);
 });
