@@ -11,7 +11,7 @@ const FiveMinTrx = require("./controller/FiveMinTrx");
 const OneMinWinGo = require("./controller/OneMinWinGo");
 const ThreeMinWinGo = require("./controller/ThreeMinWinGo");
 const FiveMinWinGo = require("./controller/FiveMinWinGo");
-const { aviator_Start_function } = require("./controller/aviatorStart");
+const AviatorStart = require("./controller/AviatorStart");
 
 const app = express();
 const httpServer = http.createServer(app);
@@ -52,7 +52,7 @@ if (x) {
 
   setTimeout(() => {
     // OneMinTrx.insertOneMinTrxResultByCron();
-    aviator_Start_function(io)
+    AviatorStart.aviator_Start_function(io);
     OneMinTrx.generatedTimeEveryAfterEveryOneMinTRX(io);
     OneMinWinGo.generatedTimeEveryAfterEveryOneMin(io);
     ThreeMinWinGo.generatedTimeEveryAfterEveryThreeMin(io);
@@ -68,7 +68,6 @@ const finalRescheduleJob = schedule.scheduleJob(
     FiveMinTrx.generatedTimeEveryAfterEveryFiveMinTRX(io);
   }
 );
-
 
 app.get("/", (req, res) => {
   res.send(`<h1>server running at port=====> ${PORT}</h1>`);
