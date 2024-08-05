@@ -52,11 +52,11 @@ if (x) {
 
   setTimeout(() => {
     // OneMinTrx.insertOneMinTrxResultByCron();
-    AviatorStart.aviator_Start_function(io);
-    OneMinTrx.generatedTimeEveryAfterEveryOneMinTRX(io);
-    OneMinWinGo.generatedTimeEveryAfterEveryOneMin(io);
-    ThreeMinWinGo.generatedTimeEveryAfterEveryThreeMin(io);
-    FiveMinWinGo.generatedTimeEveryAfterEveryFiveMin(io);
+    // AviatorStart.aviator_Start_function(io);
+    // OneMinTrx.generatedTimeEveryAfterEveryOneMinTRX(io);
+    // OneMinWinGo.generatedTimeEveryAfterEveryOneMin(io);
+    // ThreeMinWinGo.generatedTimeEveryAfterEveryThreeMin(io);
+    // FiveMinWinGo.generatedTimeEveryAfterEveryFiveMin(io);
     x = false;
   }, secondsUntilNextMinute * 1000);
 }
@@ -64,8 +64,8 @@ if (x) {
 const finalRescheduleJob = schedule.scheduleJob(
   "15,30,45,0 * * * *",
   function () {
-    ThreeMinTrx.generatedTimeEveryAfterEveryThreeMinTRX(io);
-    FiveMinTrx.generatedTimeEveryAfterEveryFiveMinTRX(io);
+    // ThreeMinTrx.generatedTimeEveryAfterEveryThreeMinTRX(io);
+    // FiveMinTrx.generatedTimeEveryAfterEveryFiveMinTRX(io);
   }
 );
 // AviatorStart.aviator_Start_function(io);
