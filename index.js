@@ -37,7 +37,7 @@ io.on("connection", (socket) => {});
 
 let x = true;
 let trx = true;
-
+//////////////////////
 if (x) {
   console.log("Waiting for the next minute to start...");
   const now = new Date();
