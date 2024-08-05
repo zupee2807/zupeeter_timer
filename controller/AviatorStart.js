@@ -15,7 +15,7 @@ exports.aviator_Start_function = async (io) => {
     io.emit("message", time);
     io.emit("crash", false);
     let fly_time = 0;
-    let milliseconds = 90;
+    let milliseconds = 50;
     let seconds = 0;
 
     io.emit("setloder", false);
@@ -40,10 +40,10 @@ exports.aviator_Start_function = async (io) => {
       }
 
       io.emit("seconds", `${String(milliseconds).padStart(2, "0")}_${seconds}`);
-      console.log(
-        `${String(milliseconds).padStart(2, "0")}_${seconds}`,
-        "hiii"
-      );
+      // console.log(
+      //   `${String(milliseconds).padStart(2, "0")}_${seconds}`,
+      //   "hiii"
+      // );
       const newTime = fly_time + 1;
       if (newTime >= time) {
         clearInterval(timerInterval);
@@ -104,18 +104,23 @@ exports.aviator_Start_function = async (io) => {
           return;
         } else {
           const percent_60_bet_amount = bet_sum * (100 / 60);
-          const find_any_loss_amount_match_with_60_percent =
-            await LossTable.aggregate([
-              {
-                $sort: { lossAmount: -1 }, // Sort by lossAmount in descending order
-              },
-              {
-                $match: { lossAmount: { $lte: percent_60_bet_amount } }, // Match the criteria
-              },
-              {
-                $limit: 1, // Limit the result to the first document
-              },
-            ]); ///////// yha se vo lossAmount aa jayega jo ki 60% of bet_amount ko veriy kre..
+          // const find_any_loss_amount_match_with_60_percent =
+          // await LossTable.aggregate([
+          //   {
+          //     $sort: { lossAmount: -1 }, // Sort by lossAmount in descending order
+          //   },
+          //   {
+          //     $match: { lossAmount: { $lte: percent_60_bet_amount } }, // Match the criteria
+          //   },
+          //   {
+          //     $limit: 1, // Limit the result to the first document
+          //   },
+          // ]); ///////// yha se vo lossAmount aa jayega jo ki 60% of bet_amount ko veriy kre..
+          const query_for_find_record_less_than_equal_to_60_percent = `SELECT * FROM aviator_loss WHERE lossAmount <= ${percent_60_bet_amount} ORDER BY lossAmount DESC LIMIT 1;`;
+          const find_any_loss_amount_match_with_60_percent = await queryDb(
+            query_for_find_record_less_than_equal_to_60_percent,
+            []
+          );
           if (
             find_any_loss_amount_match_with_60_percent?.[0] &&
             find_any_loss_amount_match_with_60_percent?.[0]?.lossAmount >
@@ -156,11 +161,14 @@ exports.aviator_Start_function = async (io) => {
               return;
             } else {
               if (bet_sum > 0 && counterboolean && cash_out_sum > 0) {
-                await SetCounter.findOneAndUpdate(
-                  {},
-                  { $inc: { counter: 1 } },
-                  { new: true, upsert: true }
-                );
+                const query_for_incr_counter =
+                  "UPDATE aviator_loss_counter SET counter = counter + 1 WHERE id = 1;";
+                await queryDb(query_for_incr_counter, []);
+                // await SetCounter.findOneAndUpdate(
+                //   {},
+                //   { $inc: { counter: 1 } },
+                //   { new: true, upsert: true }
+                // );
                 counterboolean = false;
               }
             }
@@ -226,7 +234,7 @@ exports.aviator_Start_function = async (io) => {
           return;
         }
       }
-    }, 500);
+    }, 3000);
 
     ////////////// everything converted into sql data base//////////////
     async function this_is_recusive_function_for_remove_all_lossAmount(
@@ -691,8 +699,32 @@ exports.aviator_Start_function = async (io) => {
           const updatePromises = Object.keys(userWalletChanges).map(
             async (userId) => {
               const amountChange = userWalletChanges[userId];
-              const query_for_update_wallet = `UPDATE user SET wallet = wallet + ${amountChange}  WHERE id = ?;`;
-              return await queryDb(query_for_update_wallet, [userId]);
+              let query_for_update_wallet = "";
+              let params = [];
+              if (Number(amountChange) > 0) {
+                query_for_update_wallet =
+                  "INSERT INTO `tr07_manage_ledger`(m_u_id,m_trans_id,m_cramount,m_description,m_ledger_type,m_game_type) VALUES(?,?,?,?,?,?);";
+                params = [
+                  Number(userId),
+                  Date.now(),
+                  Number(amountChange),
+                  "User has win in aviator.",
+                  "aviator",
+                  "Aviator",
+                ];
+              } else if (Number(amountChange) < 0) {
+                query_for_update_wallet =
+                  "INSERT INTO `tr07_manage_ledger`(m_u_id,m_trans_id,m_dramount,m_description,m_ledger_type,m_game_type) VALUES(?,?,?,?,?,?);";
+                params = [
+                  Number(userId),
+                  Date.now(),
+                  Math.abs(Number(amountChange)),
+                  "User has Loss in aviator.",
+                  "aviator",
+                  "Aviator",
+                ];
+              }
+              return await queryDb(query_for_update_wallet, params);
             }
           );
 
@@ -779,6 +811,132 @@ exports.cashOutFunction = async (req, res) => {
     });
   } catch (e) {
     console.log(e);
+    return res.status(500).json({
+      msg: "Something went wrong in create user query",
+    });
+  }
+};
+
+exports.getGameHistoryAviator = async (req, res) => {
+  try {
+    const query_for_game_history = `SELECT * FROM aviator_game_history;`;
+    const data = await queryDb(query_for_game_history)
+      .then((result) => {
+        return result;
+      })
+      .catch((e) => {
+        console.log("Error in fetching game history");
+      });
+    // const data = await GameHistory.find({});
+
+    if (!data)
+      return res.status(400).json({
+        msg: "Data not found",
+      });
+    return res.status(200).json({
+      data: data,
+      msg: "Data fetched successfully",
+    });
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+exports.getLederData = async (req, res) => {
+  try {
+    const query_for_get_ledger =
+      "SELECT a.`amount`,a.`amountcashed`,a.`multiplier`,a.`createdAt`,a.`updatedAt`,u.`or_m_email` as email,u.`or_m_name` as full_name,u.`or_m_mobile_no` as mobile FROM `aviator_bet_place_ledger` AS a LEFT JOIN `m03_user_detail` AS u ON a.`userid` = u.`or_m_reg_id`;";
+    // const data = await ApplyBetLedger.find({}).populate("main_id").limit(100);
+    const data = await queryDb(query_for_get_ledger)
+      .then((result) => {
+        return result;
+      })
+      .catch((e) => {
+        console.log("Error in fetching game history");
+      });
+    if (!data)
+      return res.status(400).json({
+        msg: "Data not found",
+      });
+    return res.status(200).json({
+      data: data,
+      msg: "Data fetched successfully",
+    });
+  } catch (e) {
+    console.log(e);
+  }
+};
+exports.getWalletByUserId = async (req, res) => {
+  try {
+    const { id } = req.body;
+    if (!id)
+      return res.status(400).json({
+        msg: "Undefined uesr id",
+      });
+    // const data = await User.findById({ _id: id });
+    const query_for_get_balance =
+      "SELECT or_m_user_wallet as wallet,0 as winning FROM `m03_user_detail` WHERE or_m_reg_id = ?;";
+    const data = await queryDb(query_for_get_balance, [Number(id)]);
+
+    if (!data)
+      return res.status(400).json({
+        msg: "User not found",
+      });
+    return res.status(200).json({
+      data: {
+        wallet: data?.[0]?.wallet,
+        winning: data?.[0]?.winning,
+      },
+      msg: "Data fetched successfully",
+    });
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+exports.getMyHistoryByID = async (req, res) => {
+  try {
+    const { user_id_node } = req.body;
+    console.log("HII");
+    if (!user_id_node)
+      return res.status(400).json({
+        msg: "Please provider user id",
+      });
+    // const data = await ApplyBetLedger.find({ userid: String(user_id_node) });
+    const query_for_get_my_history =
+      "SELECT * FROM `aviator_bet_place_ledger` WHERE userid = ?;";
+    const data = await queryDb(query_for_get_my_history, [
+      Number(user_id_node),
+    ]);
+
+    if (!data)
+      return res.status(400).json({
+        msg: "Data not found",
+      });
+    return res.status(200).json({
+      data: data,
+      msg: "Data fetched successfully",
+    });
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+exports.getTopRecordsAviator = async (req, res) => {
+  try {
+    // const data = await ApplyBetLedger.find({})
+    //   .sort({ amountcashed: -1 })
+    //   .populate("main_id")
+    //   .limit(10);
+    const query_for_find_top_winner =
+      "SELECT a.`amount`,a.`amountcashed`,a.`multiplier`,a.`createdAt`,a.`updatedAt`,u.`or_m_email`,u.`or_m_name`,u.`or_m_dob` FROM `aviator_bet_place_ledger` AS a LEFT JOIN `m03_user_detail` AS u ON a.`userid` = u.`or_m_reg_id` ORDER BY a.`amountcashed` DESC LIMIT 10;";
+
+    const data = await queryDb(query_for_find_top_winner, []);
+    return res.status(200).json({
+      msg: "Data save successfully",
+      data: data,
+    });
+  } catch (e) {
     return res.status(500).json({
       msg: "Something went wrong in create user query",
     });
