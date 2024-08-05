@@ -415,12 +415,13 @@ exports.aviator_Start_function = async (io) => {
       io.emit("apply_bet_counter", []);
       io.emit("cash_out_counter", []);
 
-      // done in sql
       if (msg === "counter_jyada_ho_chuka_hai") {
         let bet_sum = bet_data?.reduce((a, b) => a + b.amount, 0);
-        this_is_recusive_function_for_remove_all_lossAmount_if_counter_greater_than_3(
-          bet_sum
-        );
+        // this_is_recusive_function_for_remove_all_lossAmount_if_counter_greater_than_3(
+        //   bet_sum
+        // );
+        const query_for_remove_from_loss_table = `CALL CALL sp_to_remove_loss_amount_aviator_table(?);`;
+        await queryDb(query_for_remove_from_loss_table, [bet_sum]);
       }
       if (
         msg ===
@@ -462,37 +463,30 @@ exports.aviator_Start_function = async (io) => {
 
       if (msg === "recursive_functoin_for_all_removel_amount") {
         let bet_sum = bet_data?.reduce((a, b) => a + b.amount, 0);
-        const percent_60_bet_amount = bet_sum * (100 / 60);
-        const query_for_find_record_less_than_equal_to_60_percent = `SELECT * FROM aviator_loss WHERE lossAmount <= ${percent_60_bet_amount} ORDER BY lossAmount DESC LIMIT 1;`;
-        const find_any_loss_amount_match_with_60_percent = await queryDb(
-          query_for_find_record_less_than_equal_to_60_percent,
-          []
-        );
-        // await LossTable.aggregate([
-        //   {
-        //     $sort: { lossAmount: -1 }, // Sort by lossAmount in descending order
-        //   },
-        //   {
-        //     $match: { lossAmount: { $lte: percent_60_bet_amount } }, // Match the criteria
-        //   },
-        //   {
-        //     $limit: 1, // Limit the result to the first document
-        //   },
-        // ]);
-        const query_for_delete_record = `DELETE FROM aviator_loss WHERE id  = ?;`;
-        await queryDb(query_for_delete_record, [
-          find_any_loss_amount_match_with_60_percent?.[0].id,
+        const query_for_remove_60_percent_loss_wala_data =
+          "CALL sp_for_release_60_percent_amount_from_loss_table(?,?);";
+        await queryDb(query_for_remove_60_percent_loss_wala_data, [
+          bet_sum,
+          60,
         ]);
-        //   await LossTable.findByIdAndDelete({
-        //     _id: find_any_loss_amount_match_with_60_percent?.[0]._id,
-        //   });
+        // const percent_60_bet_amount = bet_sum * (100 / 60);
+        // const query_for_find_record_less_than_equal_to_60_percent = `SELECT * FROM aviator_loss WHERE lossAmount <= ${percent_60_bet_amount} ORDER BY lossAmount DESC LIMIT 1;`;
+        // const find_any_loss_amount_match_with_60_percent = await queryDb(
+        //   query_for_find_record_less_than_equal_to_60_percent,
+        //   []
+        // );
 
-        const total_value_bet_amount_which_is_grater_than_lossAmount =
-          bet_sum - find_any_loss_amount_match_with_60_percent?.[0]?.lossAmount;
+        // const query_for_delete_record = `DELETE FROM aviator_loss WHERE id  = ?;`;
+        // await queryDb(query_for_delete_record, [
+        //   find_any_loss_amount_match_with_60_percent?.[0].id,
+        // ]);
 
-        this_is_recusive_function_for_remove_all_lossAmount(
-          total_value_bet_amount_which_is_grater_than_lossAmount
-        );
+        // const total_value_bet_amount_which_is_grater_than_lossAmount =
+        //   bet_sum - find_any_loss_amount_match_with_60_percent?.[0]?.lossAmount;
+
+        // this_is_recusive_function_for_remove_all_lossAmount(
+        //   total_value_bet_amount_which_is_grater_than_lossAmount
+        // );
       }
 
       if (msg === "sixty_percent_se_jyada_ka_crash") {
