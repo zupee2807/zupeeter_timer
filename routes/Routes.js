@@ -1,7 +1,7 @@
 const express = require("express");
 const { getGameHistory, getMyHistory, placeBetTrx, get_Royality_Date } = require("../controller");
 const { insertOneMinTrxResultByCron } = require("../controller/OneMinTrx");
-const { betPlacedAviator, cashOutFunction, getGameHistoryAviator, getLederData, getWalletByUserId, getMyHistoryByID, getTopRecordsAviator } = require("../controller/aviatorStart");
+const { betPlacedAviator, cashOutFunction, getGameHistoryAviator, getLederData, getWalletByUserId, getMyHistoryByID, getTopRecordsAviator } = require("../controller/AviatorStart");
 // const { betPlacedAviator } = require("../controller/aviatorStart");
 const router = express.Router();
 
