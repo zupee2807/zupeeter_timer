@@ -234,7 +234,7 @@ exports.aviator_Start_function = async (io) => {
           return;
         }
       }
-    }, 3000);
+    }, 5000);
 
     ////////////// everything converted into sql data base//////////////
     async function this_is_recusive_function_for_remove_all_lossAmount(
