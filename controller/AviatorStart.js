@@ -1,6 +1,5 @@
 const { queryDb } = require("../helper/adminHelper");
 let bet_data = [];
-let boolean = false;
 let already_call_functon = true;
 exports.aviator_Start_function = async (io) => {
   async function generateAndSendMessage(io, loss_amount, get_counter) {
@@ -27,15 +26,6 @@ exports.aviator_Start_function = async (io) => {
     ////////////////////////////// interval for timer //////////////////////////////////////////////
 
     timerInterval = setInterval(async () => {
-      if (boolean) {
-        clearInterval(timerInterval);
-        clearInterval(crashInterval);
-        clearInterval(timerInterval);
-        clearInterval(crashInterval);
-        already_call_functon &&  thisFunctonMustBePerFormAfterCrash(Number(`${1}.${1}`), "no");
-        already_call_functon = false;
-        return;
-      }
       if (milliseconds === 100) {
         seconds += 1;
         milliseconds = 0;
@@ -110,18 +100,7 @@ exports.aviator_Start_function = async (io) => {
           return;
         } else {
           const percent_60_bet_amount = bet_sum * (100 / 60);
-          // const find_any_loss_amount_match_with_60_percent =
-          // await LossTable.aggregate([
-          //   {
-          //     $sort: { lossAmount: -1 }, // Sort by lossAmount in descending order
-          //   },
-          //   {
-          //     $match: { lossAmount: { $lte: percent_60_bet_amount } }, // Match the criteria
-          //   },
-          //   {
-          //     $limit: 1, // Limit the result to the first document
-          //   },
-          // ]); ///////// yha se vo lossAmount aa jayega jo ki 60% of bet_amount ko veriy kre..
+          ///////// yha se vo lossAmount aa jayega jo ki 60% of bet_amount ko veriy kre..
           const query_for_find_record_less_than_equal_to_60_percent = `SELECT * FROM aviator_loss WHERE lossAmount <= ${percent_60_bet_amount} ORDER BY lossAmount DESC LIMIT 1;`;
           const find_any_loss_amount_match_with_60_percent = await queryDb(
             query_for_find_record_less_than_equal_to_60_percent,
@@ -172,11 +151,7 @@ exports.aviator_Start_function = async (io) => {
                 const query_for_incr_counter =
                   "UPDATE aviator_loss_counter SET counter = counter + 1 WHERE id = 1;";
                 await queryDb(query_for_incr_counter, []);
-                // await SetCounter.findOneAndUpdate(
-                //   {},
-                //   { $inc: { counter: 1 } },
-                //   { new: true, upsert: true }
-                // );
+                
                 counterboolean = false;
               }
             }
@@ -619,7 +594,7 @@ exports.aviator_Start_function = async (io) => {
 
       setTimeout(() => {
         bet_data = [];
-        msg !== "no" && generateAndSendMessage(io, loss_amount, get_counter);
+       generateAndSendMessage(io, loss_amount, get_counter);
         already_call_functon = true;
       }, 30000);
     }
@@ -644,6 +619,7 @@ exports.betPlacedAviator = async (req, res) => {
     };
     bet_data.push(new_data);
     
+
     return res.status(200).json({
       msg: "Data save successfully",
     });
@@ -788,10 +764,6 @@ exports.getMyHistoryByID = async (req, res) => {
 
 exports.getTopRecordsAviator = async (req, res) => {
   try {
-    // const data = await ApplyBetLedger.find({})
-    //   .sort({ amountcashed: -1 })
-    //   .populate("main_id")
-    //   .limit(10);
     const query_for_find_top_winner =
       "SELECT a.`amount`,a.`amountcashed`,a.`multiplier`,a.`createdAt`,a.`updatedAt`,u.`or_m_email`,u.`or_m_name`,u.`or_m_dob` FROM `aviator_bet_place_ledger` AS a LEFT JOIN `m03_user_detail` AS u ON a.`userid` = u.`or_m_reg_id` ORDER BY a.`amountcashed` DESC LIMIT 10;";
 
