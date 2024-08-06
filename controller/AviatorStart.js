@@ -15,11 +15,16 @@ exports.aviator_Start_function = async (io) => {
     io.emit("message", time);
     io.emit("crash", false);
     let fly_time = 0;
-    let milliseconds = 50;
-    let seconds = 0;
+    let milliseconds = 0;
+    let seconds = 1;
 
     io.emit("setloder", false);
     io.emit("isFlying", true);
+
+
+
+
+
 
     /////////////////////////////////////////////////////////////////////// start main calculaton for cashs out ///////////////////////////
 
@@ -40,10 +45,10 @@ exports.aviator_Start_function = async (io) => {
       }
 
       io.emit("seconds", `${String(milliseconds).padStart(2, "0")}_${seconds}`);
-      // console.log(
-      //   `${String(milliseconds).padStart(2, "0")}_${seconds}`,
-      //   "hiii"
-      // );
+      console.log(
+        `${String(milliseconds).padStart(2, "0")}_${seconds}`,
+        "hiii"
+      );
       const newTime = fly_time + 1;
       if (newTime >= time) {
         clearInterval(timerInterval);
