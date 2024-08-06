@@ -420,7 +420,7 @@ exports.aviator_Start_function = async (io) => {
         // this_is_recusive_function_for_remove_all_lossAmount_if_counter_greater_than_3(
         //   bet_sum
         // );
-        const query_for_remove_from_loss_table = `CALL CALL sp_to_remove_loss_amount_aviator_table(?);`;
+        const query_for_remove_from_loss_table = `CALL sp_to_remove_loss_amount_aviator_table(?);`;
         await queryDb(query_for_remove_from_loss_table, [bet_sum]);
       }
       if (
