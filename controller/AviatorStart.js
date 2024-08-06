@@ -45,10 +45,10 @@ exports.aviator_Start_function = async (io) => {
       }
 
       io.emit("seconds", `${String(milliseconds).padStart(2, "0")}_${seconds}`);
-      console.log(
-        `${String(milliseconds).padStart(2, "0")}_${seconds}`,
-        "hiii"
-      );
+      // console.log(
+      //   `${String(milliseconds).padStart(2, "0")}_${seconds}`,
+      //   "hiii"
+      // );
       const newTime = fly_time + 1;
       if (newTime >= time) {
         clearInterval(timerInterval);
