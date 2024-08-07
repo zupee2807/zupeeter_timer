@@ -24,7 +24,7 @@ exports.aviator_Start_function = async (io) => {
     let fly_time = 0;
     let milliseconds = 0;
     let seconds = 1;
-    
+
     io.emit("setloder", false);
     io.emit("isFlying", true);
 
@@ -174,11 +174,10 @@ exports.aviator_Start_function = async (io) => {
               return;
             } else {
               if (bet_sum > 0 && counterboolean && cash_out_sum > 0) {
+                counterboolean = false;
                 const query_for_incr_counter =
                   "UPDATE aviator_loss_counter SET counter = counter + 1 WHERE id = 1;";
                 await queryDb(query_for_incr_counter, []);
-
-                counterboolean = false;
               }
             }
           }
@@ -263,17 +262,6 @@ exports.aviator_Start_function = async (io) => {
         query_for_find_record_less_than_equal_to_60_percent,
         []
       );
-      //   await LossTable.aggregate([
-      //     {
-      //       $sort: { lossAmount: -1 }, // Sort by lossAmount in descending order
-      //     },
-      //     {
-      //       $match: { lossAmount: { $lte: percent_60_bet_amount } }, // Match the criteria
-      //     },
-      //     {
-      //       $limit: 1, // Limit the result to the first document
-      //     },
-      //   ]);
       // this is the base case..
       if (!find_any_loss_amount_match_with_60_percent) return;
       if (
@@ -296,15 +284,6 @@ exports.aviator_Start_function = async (io) => {
             find_any_loss_amount_match_with_60_percent?.[0]?.id,
           ]);
 
-          // await LossTable.findByIdAndUpdate(
-          //   { _id: find_any_loss_amount_match_with_60_percent?.[0]?._id },
-          //   {
-          //     lossAmount:
-          //       find_any_loss_amount_match_with_60_percent?.[0]?.lossAmount -
-          //       bet_sum,
-          //   }
-          // );
-
           return;
         }
       } else {
@@ -314,9 +293,6 @@ exports.aviator_Start_function = async (io) => {
             find_any_loss_amount_match_with_60_percent?.[0].id,
           ]);
 
-          // await LossTable.findByIdAndDelete({
-          //   _id: find_any_loss_amount_match_with_60_percent?.[0]._id,
-          // });
           const total_value_bet_amount_which_is_grater_than_lossAmount =
             bet_sum -
             find_any_loss_amount_match_with_60_percent?.[0]?.lossAmount;
@@ -391,10 +367,7 @@ exports.aviator_Start_function = async (io) => {
             find_any_loss_amount_match_with_60_percent[0].id,
           ]);
 
-          // await LossTable.findByIdAndDelete({
-          //   _id: find_any_loss_amount_match_with_60_percent[0]._id,
-          // });
-
+       
           const total_value_bet_amount_which_is_greater_than_lossAmount =
             bet_sum - find_any_loss_amount_match_with_60_percent[0].lossAmount;
 
@@ -406,11 +379,7 @@ exports.aviator_Start_function = async (io) => {
         }
       }
 
-      // Check if there are any remaining documents
-      // const remaining_documents = await LossTable.find({}).countDocuments();
-      // if (remaining_documents === 0) {
-      //   await SetCounter.findOneAndUpdate({}, { counter: 0 });
-      // }
+   
       const query_for_count_rows = `SELECT COUNT(*) AS count_row FROM aviator_loss;`;
       const response_count = await queryDb(query_for_count_rows, []);
       if (response_count?.[0]?.count_row === 0) {
@@ -629,7 +598,7 @@ exports.aviator_Start_function = async (io) => {
           });
         generateAndSendMessage(io, loss_amount, get_counter, all_lossess);
         already_call_functon = true;
-      }, 30000);
+      }, 20000);
     }
   }
   generateAndSendMessage(io, 0, 0, []);
