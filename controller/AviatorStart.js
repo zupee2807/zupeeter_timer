@@ -58,7 +58,7 @@ exports.aviator_Start_function = async (io) => {
         return;
       }
 
-      if (milliseconds <= 10 && seconds === 1) {
+      if (seconds === 1) {
         bet_sum = bet_data?.reduce((a, b) => a + b.amount, 0);
         const percent_60_bet_amount = bet_sum * (100 / 60);
         find_any_loss_amount_match_with_60_percent = [
