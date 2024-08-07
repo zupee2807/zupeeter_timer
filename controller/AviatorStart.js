@@ -24,7 +24,7 @@ exports.aviator_Start_function = async (io) => {
     let fly_time = 0;
     let milliseconds = 0;
     let seconds = 1;
-
+    
     io.emit("setloder", false);
     io.emit("isFlying", true);
 
