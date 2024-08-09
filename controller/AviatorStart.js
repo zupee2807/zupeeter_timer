@@ -17,7 +17,7 @@ exports.aviator_Start_function = async (io) => {
     let bet_sum = 0;
     let find_any_loss_amount_match_with_60_percent = [];
     // await applyBet.deleteMany({})
-    const time = Math.floor(100 + Math.random() * (900 - 100));
+    const time = Math.floor(100 + Math.random() * (2000 - 100));
     console.log(time, "this is time to send to the uer or client");
     io.emit("message", time);
     io.emit("crash", false);
@@ -367,7 +367,6 @@ exports.aviator_Start_function = async (io) => {
             find_any_loss_amount_match_with_60_percent[0].id,
           ]);
 
-       
           const total_value_bet_amount_which_is_greater_than_lossAmount =
             bet_sum - find_any_loss_amount_match_with_60_percent[0].lossAmount;
 
@@ -379,7 +378,6 @@ exports.aviator_Start_function = async (io) => {
         }
       }
 
-   
       const query_for_count_rows = `SELECT COUNT(*) AS count_row FROM aviator_loss;`;
       const response_count = await queryDb(query_for_count_rows, []);
       if (response_count?.[0]?.count_row === 0) {
@@ -397,6 +395,7 @@ exports.aviator_Start_function = async (io) => {
       console.log("thisFunctonMustBePerFormAfterCrash HOOOOOOO crached");
       // const round = await GameRound?.find({});
       io.emit("crash", true);
+     
       io.emit("isFlying", false);
       io.emit("setcolorofdigit", true);
       io.emit("apply_bet_counter", []);
@@ -516,74 +515,6 @@ exports.aviator_Start_function = async (io) => {
         Number(total_bet_sum) - Number(total_crashed_sum)
       }`;
       await queryDb(query_for_get_admin_wallet, []);
-
-      const updateUserWallets = async (bet_data) => {
-        // Create a connection to the database
-        try {
-          // Step 1: Group bet_data by userid and calculate the total wallet change for each user
-          const userWalletChanges = bet_data.reduce((acc, element) => {
-            const userId = element.userid;
-            const amountChange = Number(
-              element.amountcashed > 0
-                ? element.amountcashed - element.amount
-                : -element.amount
-            );
-
-            if (!acc[userId]) {
-              acc[userId] = 0;
-            }
-            acc[userId] += amountChange;
-            return acc;
-          }, {});
-
-          // Step 2: Update each user once with the aggregated wallet change
-          const updatePromises = Object.keys(userWalletChanges).map(
-            async (userId) => {
-              const amountChange = userWalletChanges[userId];
-              let query_for_update_wallet = "";
-              let params = [];
-              if (Number(amountChange) > 0) {
-                query_for_update_wallet =
-                  "INSERT INTO `tr07_manage_ledger`(m_u_id,m_trans_id,m_cramount,m_description,m_ledger_type,m_game_type) VALUES(?,?,?,?,?,?);";
-                params = [
-                  Number(userId),
-                  Date.now(),
-                  Number(amountChange),
-                  "User has win in aviator.",
-                  "aviator",
-                  "Aviator",
-                ];
-              } else if (Number(amountChange) < 0) {
-                query_for_update_wallet =
-                  "INSERT INTO `tr07_manage_ledger`(m_u_id,m_trans_id,m_dramount,m_description,m_ledger_type,m_game_type) VALUES(?,?,?,?,?,?);";
-                params = [
-                  Number(userId),
-                  Date.now(),
-                  Math.abs(Number(amountChange)),
-                  "User has Loss in aviator.",
-                  "aviator",
-                  "Aviator",
-                ];
-              }
-              return await queryDb(query_for_update_wallet, params);
-            }
-          );
-
-          // Step 3: Wait for all updates to complete
-          await Promise.all(updatePromises);
-        } catch (error) {
-          console.error("Error updating user wallets:", error);
-        }
-      };
-
-      // Example usage:
-      // updateUserWallets(bet_data)
-      //   .then(() => {
-      //     console.log("User wallets updated successfully");
-      //   })
-      //   .catch((err) => {
-      //     console.error("Error updating user wallets:", err);
-      //   });
 
       setTimeout(async () => {
         bet_data = [];
@@ -713,7 +644,7 @@ exports.getGameHistoryAviator = async (req, res) => {
 exports.getLederData = async (req, res) => {
   try {
     const query_for_get_ledger =
-      "SELECT a.`amount`,a.`amountcashed`,a.`multiplier`,a.`createdAt`,a.`updatedAt`,u.`or_m_email` as email,u.`or_m_name` as full_name,u.`or_m_mobile_no` as mobile FROM `aviator_bet_place_ledger` AS a LEFT JOIN `m03_user_detail` AS u ON a.`userid` = u.`or_m_reg_id`;";
+      "SELECT fn_get_total_aviator_trading() as local_length,  a.`amount`,a.`amountcashed`,a.`multiplier`,a.`createdAt`,a.`updatedAt`,u.`or_m_email` as email,u.`or_m_name` as full_name,u.`or_m_mobile_no` as mobile FROM `aviator_bet_place_ledger` AS a LEFT JOIN `m03_user_detail` AS u ON a.`userid` = u.`or_m_reg_id` ORDER BY(a.`amountcashed`) DESC LIMIT 100;";
     // const data = await ApplyBetLedger.find({}).populate("main_id").limit(100);
     const data = await queryDb(query_for_get_ledger)
       .then((result) => {
@@ -772,7 +703,7 @@ exports.getMyHistoryByID = async (req, res) => {
       });
     // const data = await ApplyBetLedger.find({ userid: String(user_id_node) });
     const query_for_get_my_history =
-      "SELECT * FROM `aviator_bet_place_ledger` WHERE userid = ?;";
+      "SELECT * FROM `aviator_bet_place_ledger` WHERE userid = ? ORDER BY(id) DESC LIMIT 100;";
     const data = await queryDb(query_for_get_my_history, [
       Number(user_id_node),
     ]);
