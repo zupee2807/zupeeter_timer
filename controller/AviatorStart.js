@@ -18,8 +18,7 @@ exports.aviator_Start_function = async (io) => {
     let counterboolean = true;
     let find_any_loss_amount_match_with_60_percent = [];
     // await applyBet.deleteMany({})
-    const time = 100
-    // Math.floor(100 + Math.random() * (1200 - 100));
+    const time =  Math.floor(100 + Math.random() * (1200 - 100));
     console.log(time, "this is time to send to the uer or client");
     io.emit("message", time);
     io.emit("crash", false);
