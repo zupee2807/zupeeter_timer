@@ -2,6 +2,7 @@ const { result } = require("lodash");
 const { queryDb } = require("../helper/adminHelper");
 let bet_data = [];
 let already_call_functon = true;
+let total_cashout_temp = 0;
 exports.aviator_Start_function = async (io) => {
   async function generateAndSendMessage(
     io,
@@ -416,8 +417,8 @@ exports.aviator_Start_function = async (io) => {
       io.emit("cash_out_counter", []);
       /////////////////////////// fake process //////////////////////
       let bet_sum = bet_data?.reduce((a, b) => a + b.amount, 0);
-      const cash_out_sum = bet_data?.reduce((a, b) => a + b?.amountcashed, 0);
-
+      // const cash_out_sum = bet_data?.reduce((a, b) => a + b?.amountcashed, 0);
+      const cash_out_sum = total_cashout_temp;
       const total_amount_ka_60_percent = bet_sum * (60 / 100);
 
       if (cash_out_sum > total_amount_ka_60_percent) {
@@ -539,6 +540,7 @@ exports.aviator_Start_function = async (io) => {
 
       setTimeout(async () => {
         bet_data = [];
+        total_cashout_temp = 0;
         const query_for_get_all_loss_amount =
           "SELECT id,lossAmount FROM aviator_loss ORDER BY lossAmount DESC;";
         const all_lossess = await queryDb(query_for_get_all_loss_amount, [])
@@ -617,7 +619,7 @@ exports.cashOutFunction = async (req, res) => {
         item.multiplier = multiplier;
       }
     });
-
+    total_cashout_temp = total_cashout_temp + amount;
     const query_for_update_wallet =
       "INSERT INTO `tr07_manage_ledger`(m_u_id,m_trans_id,m_cramount,m_description,m_ledger_type,m_game_type) VALUES(?,?,?,?,?,?);";
     const params = [
