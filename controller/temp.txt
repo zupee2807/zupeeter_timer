@@ -4,7 +4,6 @@ let bet_data = [];
 let already_call_functon = true;
 let total_cashout_temp = 0;
 let total_bet_place_temp = 0;
-let total_candidate = 0;
 exports.aviator_Start_function = async (io) => {
   async function generateAndSendMessage(
     io,
@@ -16,10 +15,11 @@ exports.aviator_Start_function = async (io) => {
     let crashInterval;
 
     let counterboolean = true;
+    let total_bet_candidate = 0;
+    let bet_sum = 0;
     let find_any_loss_amount_match_with_60_percent = [];
     // await applyBet.deleteMany({})
-    const time = 100
-    // Math.floor(100 + Math.random() * (1200 - 100));
+    const time = Math.floor(100 + Math.random() * (1200 - 100));
     console.log(time, "this is time to send to the uer or client");
     io.emit("message", time);
     io.emit("crash", false);
@@ -59,8 +59,10 @@ exports.aviator_Start_function = async (io) => {
         already_call_functon = false;
         return;
       }
+
       if (seconds === 1) {
-        const percent_60_bet_amount = total_bet_place_temp * (100 / 60);
+        bet_sum = bet_data?.reduce((a, b) => a + b.amount, 0);
+        const percent_60_bet_amount = bet_sum * (100 / 60);
         find_any_loss_amount_match_with_60_percent = [
           lossess_amount?.find(
             (i) => Number(i?.lossAmount) <= percent_60_bet_amount
@@ -75,19 +77,27 @@ exports.aviator_Start_function = async (io) => {
     ///////////////////////////////////// thsi is the calculation of total cashout sum
 
     crashInterval = setInterval(async () => {
+      //////////////////////get counter         ////////////////////////////////////////////
 
-      const total_amount_ka_60_percent = total_bet_place_temp * (60 / 100); /// 60 percent se upar jayega to crash kra dena hai
+      /// calculation for apply all bets summesion////////////////////////////
+
+      ///////////////////////////////
+      // bet_sum = bet_data?.reduce((a, b) => a + b.amount, 0);
+      total_bet_candidate = bet_data?.length;
+
+      const cash_out_sum = bet_data?.reduce((a, b) => a + b?.amountcashed, 0);
+      const total_amount_ka_60_percent = bet_sum * (60 / 100); /// 60 percent se upar jayega to crash kra dena hai
 
       /////////////////// condition for loss amount //////////////////////////
 
-      if (loss_amount !== 0 && total_bet_place_temp !== 0) {
+      if (loss_amount !== 0 && bet_sum !== 0) {
         if (get_counter >= 3) {
           clearInterval(timerInterval);
           clearInterval(crashInterval);
           clearInterval(timerInterval);
           clearInterval(crashInterval);
           // this_is_recusive_function_for_remove_all_lossAmount_if_counter_greater_than_3(
-          //   total_bet_place_temp
+          //   bet_sum
           // );
           already_call_functon &&
             thisFunctonMustBePerFormAfterCrash(
@@ -96,7 +106,7 @@ exports.aviator_Start_function = async (io) => {
             );
           already_call_functon = false;
           return;
-        } else if (loss_amount <= total_bet_place_temp) {
+        } else if (loss_amount <= bet_sum) {
           counterboolean = false;
           clearInterval(timerInterval);
           clearInterval(crashInterval);
@@ -114,7 +124,7 @@ exports.aviator_Start_function = async (io) => {
           if (
             find_any_loss_amount_match_with_60_percent?.[0] &&
             find_any_loss_amount_match_with_60_percent?.[0]?.lossAmount >
-              total_bet_place_temp
+              bet_sum
           ) {
             clearInterval(timerInterval);
             clearInterval(crashInterval);
@@ -123,7 +133,7 @@ exports.aviator_Start_function = async (io) => {
 
             const remaining_amount =
               find_any_loss_amount_match_with_60_percent?.[0]?.lossAmount -
-              total_bet_place_temp;
+              bet_sum;
 
             if (
               remaining_amount > 0 &&
@@ -154,7 +164,7 @@ exports.aviator_Start_function = async (io) => {
               already_call_functon = false;
               return;
             } else {
-              if (total_bet_place_temp > 0 && counterboolean && total_cashout_temp > 0) {
+              if (bet_sum > 0 && counterboolean && cash_out_sum > 0) {
                 counterboolean = false;
                 const query_for_incr_counter =
                   "UPDATE aviator_loss_counter SET counter = counter + 1 WHERE id = 1;";
@@ -165,7 +175,7 @@ exports.aviator_Start_function = async (io) => {
         }
       }
 
-      if (total_candidate <= 1 && total_bet_place_temp >= 100) {
+      if (total_bet_candidate <= 1 && bet_sum >= 100) {
         clearInterval(timerInterval);
         clearInterval(crashInterval);
         clearInterval(timerInterval);
@@ -179,7 +189,7 @@ exports.aviator_Start_function = async (io) => {
       }
 
       ///////////////////////////////////// thsi is the calculation of total cashout sum
-      if (total_candidate <= 2 && total_bet_place_temp >= 200) {
+      if (total_bet_candidate <= 2 && bet_sum >= 200) {
         clearInterval(timerInterval);
         clearInterval(crashInterval);
         clearInterval(timerInterval);
@@ -193,7 +203,7 @@ exports.aviator_Start_function = async (io) => {
       }
 
       /////////// conditoin for that if total amount is grater or equal that 500 Rs. creash ////////////////////
-      if (total_candidate <= 5 && total_bet_place_temp >= 500) {
+      if (total_bet_candidate <= 5 && bet_sum >= 500) {
         clearInterval(timerInterval);
         clearInterval(crashInterval);
         clearInterval(timerInterval);
@@ -206,7 +216,7 @@ exports.aviator_Start_function = async (io) => {
         return;
       }
       ////////////////////// conndition is that means agar cashout 60% se jyada huaa to crash kra do///////////////
-      if (total_cashout_temp > total_amount_ka_60_percent) {
+      if (cash_out_sum > total_amount_ka_60_percent) {
         console.log("Function is called now 60 percent se jyada");
         clearInterval(timerInterval);
         clearInterval(crashInterval);
@@ -214,7 +224,7 @@ exports.aviator_Start_function = async (io) => {
         clearInterval(crashInterval);
         counterboolean = false;
         ///////////////// this is the condition that means if cashout is grater than //////////////////////
-        if (total_cashout_temp > total_bet_place_temp) {
+        if (cash_out_sum > bet_sum) {
           clearInterval(timerInterval);
           clearInterval(crashInterval);
           clearInterval(timerInterval);
@@ -226,7 +236,7 @@ exports.aviator_Start_function = async (io) => {
             );
           already_call_functon = false;
           return;
-        } else if (total_cashout_temp < total_bet_place_temp) {
+        } else if (cash_out_sum < bet_sum) {
           clearInterval(timerInterval);
           clearInterval(crashInterval);
           clearInterval(timerInterval);
@@ -242,7 +252,7 @@ exports.aviator_Start_function = async (io) => {
         ///////////////// this is the condition that means if cashout is grater than //////////////////////
       }
       //////////////////// agar bet lgi hui hai to  second 4 se jyada nhi hone chahiye (+1 krna pdega hmesa q ki ui me +1 karke dikhaya gya hai each and everything)
-      if (total_bet_place_temp > 0) {
+      if (bet_sum > 0) {
         if (Number(seconds >= 3)) {
           clearInterval(timerInterval);
           clearInterval(crashInterval);
@@ -257,6 +267,140 @@ exports.aviator_Start_function = async (io) => {
         }
       }
     }, 200);
+
+    ////////////// everything converted into sql data base//////////////
+    async function this_is_recusive_function_for_remove_all_lossAmount(
+      bet_sum
+    ) {
+      const percent_60_bet_amount = bet_sum * (100 / 60);
+      const query_for_find_record_less_than_equal_to_60_percent = `SELECT * FROM aviator_loss WHERE lossAmount <= ${percent_60_bet_amount} ORDER BY lossAmount DESC LIMIT 1;`;
+      const find_any_loss_amount_match_with_60_percent = await queryDb(
+        query_for_find_record_less_than_equal_to_60_percent,
+        []
+      );
+      // this is the base case..
+      if (!find_any_loss_amount_match_with_60_percent) return;
+      if (
+        find_any_loss_amount_match_with_60_percent?.[0] &&
+        find_any_loss_amount_match_with_60_percent?.[0]?.lossAmount > bet_sum
+      ) {
+        clearInterval(timerInterval);
+        clearInterval(crashInterval);
+        clearInterval(timerInterval);
+        clearInterval(crashInterval);
+
+        const remaining_amount =
+          find_any_loss_amount_match_with_60_percent?.[0]?.lossAmount - bet_sum;
+        if (
+          remaining_amount > 0 &&
+          find_any_loss_amount_match_with_60_percent?.[0]
+        ) {
+          const query_update_record_if_found = `UPDATE aviator_loss SET lossAmount = lossAmount - ${bet_sum} WHERE id = ?`;
+          await queryDb(query_update_record_if_found, [
+            find_any_loss_amount_match_with_60_percent?.[0]?.id,
+          ]);
+
+          return;
+        }
+      } else {
+        if (find_any_loss_amount_match_with_60_percent?.[0]) {
+          const query_for_delete_record = `DELETE FROM aviator_loss WHERE id  = ?;`;
+          await queryDb(query_for_delete_record, [
+            find_any_loss_amount_match_with_60_percent?.[0].id,
+          ]);
+
+          const total_value_bet_amount_which_is_grater_than_lossAmount =
+            bet_sum -
+            find_any_loss_amount_match_with_60_percent?.[0]?.lossAmount;
+          if (total_value_bet_amount_which_is_grater_than_lossAmount > 0)
+            this_is_recusive_function_for_remove_all_lossAmount(
+              total_value_bet_amount_which_is_grater_than_lossAmount
+            );
+        }
+      }
+    }
+
+    ////////////////// every thing is converted into sql table //////////////////////////////////////////
+    async function this_is_recusive_function_for_remove_all_lossAmount_if_counter_greater_than_3(
+      bet_sum
+    ) {
+      console.log("Anand ji ka function call huaa", bet_sum);
+
+      const query_for_finding_loss_amount = `SELECT * FROM aviator_loss ORDER BY lossAmount DESC LIMIT 1; `;
+      const find_any_loss_amount_match_with_60_percent = await queryDb(
+        query_for_finding_loss_amount,
+        []
+      );
+      //   await LossTable.aggregate([
+      //     {
+      //       $sort: { lossAmount: -1 }, // Sort by lossAmount in descending order
+      //     },
+      //     {
+      //       $limit: 1, // Limit the result to the first document
+      //     },
+      //   ]);
+
+      // this is the base case..
+      if (
+        !find_any_loss_amount_match_with_60_percent ||
+        find_any_loss_amount_match_with_60_percent.length <= 0
+      ) {
+        const query_for_update_counter = `UPDATE aviator_loss_counter SET counter = 0 WHERE id = 1;`;
+        await queryDb(query_for_update_counter, []);
+        //   await SetCounter.findOneAndUpdate({}, { counter: 0 });
+        return;
+      }
+
+      if (
+        find_any_loss_amount_match_with_60_percent[0] &&
+        find_any_loss_amount_match_with_60_percent[0].lossAmount > bet_sum
+      ) {
+        const remaining_amount =
+          find_any_loss_amount_match_with_60_percent[0].lossAmount - bet_sum;
+
+        if (remaining_amount > 0) {
+          clearInterval(timerInterval);
+          clearInterval(crashInterval);
+
+          const query_for_update_loss_amount = `UPDATE aviator_loss SET lossAmount = ? WHERE id = ?;`;
+          await queryDb(query_for_update_loss_amount, [
+            remaining_amount,
+            find_any_loss_amount_match_with_60_percent[0].id,
+          ]);
+          // await LossTable.findByIdAndUpdate(
+          //   { _id: find_any_loss_amount_match_with_60_percent[0]._id },
+          //   {
+          //     lossAmount: remaining_amount,
+          //   }
+          // );
+
+          return;
+        }
+      } else {
+        if (find_any_loss_amount_match_with_60_percent[0]) {
+          const query_for_delete_record = `DELETE FROM aviator_loss WHERE id = ?;`;
+          await queryDb(query_for_delete_record, [
+            find_any_loss_amount_match_with_60_percent[0].id,
+          ]);
+
+          const total_value_bet_amount_which_is_greater_than_lossAmount =
+            bet_sum - find_any_loss_amount_match_with_60_percent[0].lossAmount;
+
+          if (total_value_bet_amount_which_is_greater_than_lossAmount > 0) {
+            return this_is_recusive_function_for_remove_all_lossAmount_if_counter_greater_than_3(
+              total_value_bet_amount_which_is_greater_than_lossAmount
+            );
+          }
+        }
+      }
+
+      const query_for_count_rows = `SELECT COUNT(*) AS count_row FROM aviator_loss;`;
+      const response_count = await queryDb(query_for_count_rows, []);
+      if (response_count?.[0]?.count_row === 0) {
+        const query_for_update_counter = `UPDATE aviator_loss_counter SET counter = 0 WHERE id = 1;`;
+        await queryDb(query_for_update_counter, []);
+      }
+    }
 
     async function thisFunctonMustBePerFormAfterCrash(time, msg) {
       already_call_functon = false;
@@ -273,23 +417,27 @@ exports.aviator_Start_function = async (io) => {
       io.emit("apply_bet_counter", []);
       io.emit("cash_out_counter", []);
       /////////////////////////// fake process //////////////////////
-     
+      let bet_sum = bet_data?.reduce((a, b) => a + b.amount, 0);
+      // const cash_out_sum = bet_data?.reduce((a, b) => a + b?.amountcashed, 0);
+      const cash_out_sum = total_cashout_temp;
+      const total_amount_ka_60_percent = bet_sum * (60 / 100);
+
       if (msg === "counter_jyada_ho_chuka_hai") {
         const query_for_remove_from_loss_table = `CALL sp_to_remove_loss_amount_aviator_table(?);`;
-        await queryDb(query_for_remove_from_loss_table, [total_bet_place_temp]);
+        await queryDb(query_for_remove_from_loss_table, [bet_sum]);
       }
       if (
         msg ===
         "loss_if_loss_jyada_hai_bet_amount_se_aur_60_percent_se_koi_match_bhi_kiya_hai"
       ) {
-        const percent_60_bet_amount = total_bet_place_temp * (100 / 60);
+        const percent_60_bet_amount = bet_sum * (100 / 60);
         const query_for_find_record_less_than_equal_to_60_percent = `SELECT * FROM aviator_loss WHERE lossAmount <= ${percent_60_bet_amount} ORDER BY lossAmount DESC LIMIT 1;`;
         const find_any_loss_amount_match_with_60_percent = await queryDb(
           query_for_find_record_less_than_equal_to_60_percent,
           []
         );
 
-        const query_update_record_if_found = `UPDATE aviator_loss SET lossAmount = lossAmount - ${total_bet_place_temp} WHERE id = ?`;
+        const query_update_record_if_found = `UPDATE aviator_loss SET lossAmount = lossAmount - ${bet_sum} WHERE id = ?`;
         await queryDb(query_update_record_if_found, [
           find_any_loss_amount_match_with_60_percent?.[0]?.id,
         ]);
@@ -299,7 +447,7 @@ exports.aviator_Start_function = async (io) => {
         const query_for_remove_60_percent_loss_wala_data =
           "CALL sp_for_release_60_percent_amount_from_loss_table(?,?);";
         await queryDb(query_for_remove_60_percent_loss_wala_data, [
-          total_bet_place_temp,
+          bet_sum,
           60,
         ]);
       }
@@ -308,7 +456,7 @@ exports.aviator_Start_function = async (io) => {
       //   console.log("sixty_percent_se_jyada_ka_crash");
 
       //   const query_for_insert_record_in_loss_table = `INSERT INTO aviator_loss(lossAmount) VALUES(${
-      //     total_cashout_temp - total_bet_place_temp
+      //     cash_out_sum - bet_sum
       //   })`;
       //   await queryDb(query_for_insert_record_in_loss_table, []);
       // }
@@ -326,6 +474,41 @@ exports.aviator_Start_function = async (io) => {
         msg === "pre" ? time : time - 0.01,
       ]);
 
+      const saveBetLedgers = async (bet_data) => {
+        const query = `
+                INSERT INTO aviator_bet_place_ledger (userid, amount, amountcashed, multiplier)
+                VALUES (?, ?, ?, ?)
+              `;
+
+        // Create an array of promises for insert operations
+        const promises = bet_data.map(async (element) => {
+          const values = [
+            element.userid,
+            // element.id,
+            element.amount,
+            element.amountcashed,
+            element.multiplier,
+          ];
+          return queryDb(query, values);
+        });
+
+        // Execute all insert operations
+        try {
+          await Promise.all(promises);
+        } catch (error) {
+          console.error("Error saving bet ledgers:", error);
+        }
+      };
+
+      // Example usage:
+      saveBetLedgers(bet_data)
+        .then(() => {
+          console.log("All ApplyBetLedger objects saved successfully");
+        })
+        .catch((err) => {
+          console.error("Error saving ApplyBetLedger objects:", err);
+        });
+
       setTimeout(() => {
         io.emit("setcolorofdigit", false);
         io.emit("setloder", true);
@@ -338,15 +521,27 @@ exports.aviator_Start_function = async (io) => {
       const set_counter = await queryDb(query_for_get_counter, []);
       let get_counter = set_counter?.[0]?.counter || 0;
 
-      const query_for_update_wallet_and_loss_table =
-        "CALL sp_clear_remaining_bet_aviator();";
-      await queryDb(query_for_update_wallet_and_loss_table, []);
+      const total_bet_sum = bet_data?.reduce((a, b) => a + b.amount, 0);
+      const total_crashed_sum = bet_data?.reduce(
+        (a, b) => a + b.amountcashed,
+        0
+      );
 
+      const query_for_get_admin_wallet = `UPDATE aviator_admin_wallet SET wallet = wallet + ${
+        Number(total_bet_sum) - Number(total_crashed_sum)
+      }`;
+      await queryDb(query_for_get_admin_wallet, []);
+
+      // if (cash_out_sum > total_amount_ka_60_percent) {
+      //   const query_for_insert_record_in_loss_table = `INSERT INTO aviator_loss(lossAmount) VALUES(${Number(
+      //     cash_out_sum - bet_sum
+      //   )?.toFixed(4)})`;
+      //   await queryDb(query_for_insert_record_in_loss_table, []);
+      // }
       setTimeout(async () => {
         bet_data = [];
         total_cashout_temp = 0;
         total_bet_place_temp = 0;
-        total_candidate = 0;
         const query_for_get_all_loss_amount =
           "SELECT id,lossAmount FROM aviator_loss ORDER BY lossAmount DESC;";
         const all_lossess = await queryDb(query_for_get_all_loss_amount, [])
@@ -371,20 +566,34 @@ exports.betPlacedAviator = async (req, res) => {
       return res.status(403).json({
         msg: "All field is required",
       });
+    const new_data = {
+      userid: userid,
+      id: id,
+      amount: amount,
+      amountcashed: 0,
+      multiplier: 0,
+      button_type: button_type,
+    };
+    bet_data.push(new_data);
+
     total_bet_place_temp = total_bet_place_temp + amount;
-    total_candidate = total_candidate + 1;
-    const query_for_bet_place =
-      "CALL `sp_place_bet_aviator`(?,?,?,?,@result_msg); SELECT @result_msg;";
+
+    // console.log(total_bet_place_temp);
+    const query_for_update_wallet =
+      "INSERT INTO `tr07_manage_ledger`(m_u_id,m_trans_id,m_dramount,m_description,m_ledger_type,m_game_type) VALUES(?,?,?,?,?,?);";
     const params = [
-      String(userid),
-      String(Date.now()),
-      String(amount),
-      button_type,
+      Number(userid),
+      Date.now(),
+      Math.abs(Number(amount)),
+      "Bet Placed",
+      "aviator",
+      "Aviator",
     ];
-    await queryDb(query_for_bet_place, params)
+
+    await queryDb(query_for_update_wallet, params)
       ?.then((result) => {
         return res.status(200).json({
-          msg: result?.[1]?.[0]?.["@result_msg"],
+          msg: "Data save successfully",
         });
       })
       .catch((e) => {
@@ -408,21 +617,44 @@ exports.cashOutFunction = async (req, res) => {
         msg: "All field is required",
       });
 
+    bet_data.forEach((item) => {
+      if (item.id === id && item.button_type === button_type) {
+        item.amountcashed = amount;
+        item.multiplier = multiplier;
+      }
+    });
     total_cashout_temp = total_cashout_temp + amount;
+    const total_amount_ka_60_percent = total_bet_place_temp * (60 / 100);
 
-    const query_for_cash_out =
-      "CALL sp_clear_bet_aviator(?,?,?,?,?,@result_msg); SELECT @result_msg;";
+    if (total_cashout_temp > total_amount_ka_60_percent) {
+      const query_for_insert_record_in_loss_table = `INSERT INTO aviator_loss(lossAmount) VALUES(?)`;
+
+      await queryDb(query_for_insert_record_in_loss_table, [
+        Number(total_cashout_temp - total_bet_place_temp)?.toFixed(4),
+      ])
+        .then((result) => {
+          return res;
+        })
+        .catch((e) => {
+          return e;
+        });
+    }
+
+    const query_for_update_wallet =
+      "INSERT INTO `tr07_manage_ledger`(m_u_id,m_trans_id,m_cramount,m_description,m_ledger_type,m_game_type) VALUES(?,?,?,?,?,?);";
     const params = [
-      String(userid),
-      String(Date.now()),
-      String(amount),
-      Number(multiplier)?.toFixed(2),
-      button_type,
+      Number(userid),
+      Date.now(),
+      Math.abs(Number(amount)),
+      "Cash Out",
+      "aviator",
+      "Aviator",
     ];
-    await queryDb(query_for_cash_out, params)
+
+    await queryDb(query_for_update_wallet, params)
       .then((result) => {
         return res.status(200).json({
-          msg: result?.[1]?.[0]?.["@result_msg"],
+          msg: "Data save successfully",
         });
       })
       .catch((e) => {
