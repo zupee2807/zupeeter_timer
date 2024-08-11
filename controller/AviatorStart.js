@@ -423,7 +423,7 @@ exports.aviator_Start_function = async (io) => {
 
       if (cash_out_sum > total_amount_ka_60_percent) {
         const query_for_insert_record_in_loss_table = `INSERT INTO aviator_loss(lossAmount) VALUES(${
-          cash_out_sum - bet_sum
+          Number(cash_out_sum - bet_sum)?.toFixed(4)
         })`;
         await queryDb(query_for_insert_record_in_loss_table, []);
       }
