@@ -3,6 +3,7 @@ const { queryDb } = require("../helper/adminHelper");
 let bet_data = [];
 let already_call_functon = true;
 let total_cashout_temp = 0;
+let total_bet_place_temp = 0;
 exports.aviator_Start_function = async (io) => {
   async function generateAndSendMessage(
     io,
@@ -421,13 +422,6 @@ exports.aviator_Start_function = async (io) => {
       const cash_out_sum = total_cashout_temp;
       const total_amount_ka_60_percent = bet_sum * (60 / 100);
 
-      if (cash_out_sum > total_amount_ka_60_percent) {
-        const query_for_insert_record_in_loss_table = `INSERT INTO aviator_loss(lossAmount) VALUES(${
-          Number(cash_out_sum - bet_sum)?.toFixed(4)
-        })`;
-        await queryDb(query_for_insert_record_in_loss_table, []);
-      }
-
       if (msg === "counter_jyada_ho_chuka_hai") {
         const query_for_remove_from_loss_table = `CALL sp_to_remove_loss_amount_aviator_table(?);`;
         await queryDb(query_for_remove_from_loss_table, [bet_sum]);
@@ -538,9 +532,16 @@ exports.aviator_Start_function = async (io) => {
       }`;
       await queryDb(query_for_get_admin_wallet, []);
 
+      // if (cash_out_sum > total_amount_ka_60_percent) {
+      //   const query_for_insert_record_in_loss_table = `INSERT INTO aviator_loss(lossAmount) VALUES(${Number(
+      //     cash_out_sum - bet_sum
+      //   )?.toFixed(4)})`;
+      //   await queryDb(query_for_insert_record_in_loss_table, []);
+      // }
       setTimeout(async () => {
         bet_data = [];
         total_cashout_temp = 0;
+        total_bet_place_temp = 0;
         const query_for_get_all_loss_amount =
           "SELECT id,lossAmount FROM aviator_loss ORDER BY lossAmount DESC;";
         const all_lossess = await queryDb(query_for_get_all_loss_amount, [])
@@ -575,6 +576,9 @@ exports.betPlacedAviator = async (req, res) => {
     };
     bet_data.push(new_data);
 
+    total_bet_place_temp = total_bet_place_temp + amount;
+
+    // console.log(total_bet_place_temp);
     const query_for_update_wallet =
       "INSERT INTO `tr07_manage_ledger`(m_u_id,m_trans_id,m_dramount,m_description,m_ledger_type,m_game_type) VALUES(?,?,?,?,?,?);";
     const params = [
@@ -620,6 +624,22 @@ exports.cashOutFunction = async (req, res) => {
       }
     });
     total_cashout_temp = total_cashout_temp + amount;
+    const total_amount_ka_60_percent = total_bet_place_temp * (60 / 100);
+
+    if (total_cashout_temp > total_amount_ka_60_percent) {
+      const query_for_insert_record_in_loss_table = `INSERT INTO aviator_loss(lossAmount) VALUES(?)`;
+
+      await queryDb(query_for_insert_record_in_loss_table, [
+        Number(total_cashout_temp - total_bet_place_temp)?.toFixed(4),
+      ])
+        .then((result) => {
+          return res;
+        })
+        .catch((e) => {
+          return e;
+        });
+    }
+
     const query_for_update_wallet =
       "INSERT INTO `tr07_manage_ledger`(m_u_id,m_trans_id,m_cramount,m_description,m_ledger_type,m_game_type) VALUES(?,?,?,?,?,?);";
     const params = [
