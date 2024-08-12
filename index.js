@@ -61,7 +61,7 @@ if (x) {
     x = false;
   }, secondsUntilNextMinute * 1000);
 }
-//////////////////////////////////////////////////
+///////////////////////////////////////////////////////
 const finalRescheduleJob = schedule.scheduleJob(
   "15,30,45,0 * * * *",
   function () {
