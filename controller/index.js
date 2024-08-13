@@ -187,7 +187,6 @@ exports.get_Royality_Date = async (req, res) => {
     const query = `CALL sp_for_reamining_days_to_achive_ro_club(?,@remaining_days,@type_of_club); SELECT @remaining_days,@type_of_club; `;
     await queryDb(query, [id])
       .then((result) => {
-        console.log(result);
         return res.status(200).json({
           msg: "Data found successfully",
           data: {
