@@ -18,7 +18,7 @@ exports.aviator_Start_function = async (io) => {
     let counterboolean = true;
     let find_any_loss_amount_match_with_60_percent = [];
     // await applyBet.deleteMany({})
-    const time =  Math.floor(100 + Math.random() * (1200 - 100));
+    const time = Math.floor(100 + Math.random() * (1200 - 100));
     console.log(time, "this is time to send to the uer or client");
     io.emit("message", time);
     io.emit("crash", false);
@@ -74,7 +74,6 @@ exports.aviator_Start_function = async (io) => {
     ///////////////////////////////////// thsi is the calculation of total cashout sum
 
     crashInterval = setInterval(async () => {
-
       const total_amount_ka_60_percent = total_bet_place_temp * (60 / 100); /// 60 percent se upar jayega to crash kra dena hai
 
       /////////////////// condition for loss amount //////////////////////////
@@ -153,10 +152,16 @@ exports.aviator_Start_function = async (io) => {
               already_call_functon = false;
               return;
             } else {
-              if (total_bet_place_temp > 0 && counterboolean && total_cashout_temp > 0) {
+              if (
+                total_bet_place_temp > 0 &&
+                counterboolean &&
+                total_cashout_temp > 0
+              ) {
                 counterboolean = false;
+                // const query_for_incr_counter =
+                //   "UPDATE aviator_loss_counter SET counter = counter + 1 WHERE id = 1;";
                 const query_for_incr_counter =
-                  "UPDATE aviator_loss_counter SET counter = counter + 1 WHERE id = 1;";
+                "UPDATE aviator_loss_counter SET counter = 3 WHERE id = 1;";
                 await queryDb(query_for_incr_counter, []);
               }
             }
@@ -272,7 +277,7 @@ exports.aviator_Start_function = async (io) => {
       io.emit("apply_bet_counter", []);
       io.emit("cash_out_counter", []);
       /////////////////////////// fake process //////////////////////
-     
+
       if (msg === "counter_jyada_ho_chuka_hai") {
         const query_for_remove_from_loss_table = `CALL sp_to_remove_loss_amount_aviator_table(?);`;
         await queryDb(query_for_remove_from_loss_table, [total_bet_place_temp]);
@@ -337,9 +342,11 @@ exports.aviator_Start_function = async (io) => {
       const set_counter = await queryDb(query_for_get_counter, []);
       let get_counter = set_counter?.[0]?.counter || 0;
 
-      const query_for_update_wallet_and_loss_table =
-        "CALL sp_clear_remaining_bet_aviator();";
-      await queryDb(query_for_update_wallet_and_loss_table, []);
+      setTimeout(async () => {
+        const query_for_update_wallet_and_loss_table =
+          "CALL sp_clear_remaining_bet_aviator();";
+        await queryDb(query_for_update_wallet_and_loss_table, []);
+      }, 10000);
 
       setTimeout(async () => {
         bet_data = [];
