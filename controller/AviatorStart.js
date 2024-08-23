@@ -169,32 +169,32 @@ exports.aviator_Start_function = async (io) => {
         }
       }
 
-      if (total_candidate <= 1 && total_bet_place_temp >= 100) {
-        clearInterval(timerInterval);
-        clearInterval(crashInterval);
-        clearInterval(timerInterval);
-        clearInterval(crashInterval);
-        already_call_functon &&
-          thisFunctonMustBePerFormAfterCrash(
-            Number(`${seconds}.${milliseconds}`)
-          );
-        already_call_functon = false;
-        return;
-      }
+      // if (total_candidate <= 1 && total_bet_place_temp >= 100) {
+      //   clearInterval(timerInterval);
+      //   clearInterval(crashInterval);
+      //   clearInterval(timerInterval);
+      //   clearInterval(crashInterval);
+      // already_call_functon &&
+      //   thisFunctonMustBePerFormAfterCrash(
+      //     Number(`${seconds}.${milliseconds}`)
+      //   );
+      //   already_call_functon = false;
+      //   return;
+      // }
 
       ///////////////////////////////////// thsi is the calculation of total cashout sum
-      if (total_candidate <= 2 && total_bet_place_temp >= 200) {
-        clearInterval(timerInterval);
-        clearInterval(crashInterval);
-        clearInterval(timerInterval);
-        clearInterval(crashInterval);
-        already_call_functon &&
-          thisFunctonMustBePerFormAfterCrash(
-            Number(`${seconds}.${milliseconds}`)
-          );
-        already_call_functon = false;
-        return;
-      }
+      // if (total_candidate <= 2 && total_bet_place_temp >= 200) {
+      //   clearInterval(timerInterval);
+      //   clearInterval(crashInterval);
+      //   clearInterval(timerInterval);
+      //   clearInterval(crashInterval);
+      //   already_call_functon &&
+      //     thisFunctonMustBePerFormAfterCrash(
+      //       Number(`${seconds}.${milliseconds}`)
+      //     );
+      //   already_call_functon = false;
+      //   return;
+      // }
 
       /////////// conditoin for that if total amount is grater or equal that 500 Rs. creash ////////////////////
       if (total_candidate <= 5 && total_bet_place_temp >= 500) {
