@@ -52,7 +52,6 @@ if (x) {
 
   setTimeout(() => {
     // OneMinTrx.insertOneMinTrxResultByCron();
-    /////////////////////////////////
     AviatorStart.aviator_Start_function(io);
     OneMinTrx.generatedTimeEveryAfterEveryOneMinTRX(io);
     OneMinWinGo.generatedTimeEveryAfterEveryOneMin(io);
