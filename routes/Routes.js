@@ -15,12 +15,12 @@ router.get("/insert-trx_result_ovi",insertOneMinTrxResultByCron);
 
 
 // aviator api's 
-// router.post("/api/v1/apply-bet",betPlacedAviator);
-// router.post("/api/v1/cash-out",cashOutFunction);
-// router.get("/api/v1/get-game-history", getGameHistoryAviator);
-// router.get("/api/v1/get-ledger-data", getLederData);
-// router.post("/api/v1/get-wallet-amount-by-id", getWalletByUserId);
-// router.post("/api/v1/my-history-by-user-id", getMyHistoryByID);
-// router.get("/api/v1/get-top-users", getTopRecordsAviator);
+router.post("/api/v1/apply-bet-aviator-first",betPlacedAviator);
+router.post("/api/v1/cash-out-aviator-last",cashOutFunction);
+router.get("/api/v1/get-game-history", getGameHistoryAviator);
+router.get("/api/v1/get-ledger-data", getLederData);
+router.post("/api/v1/get-wallet-amount-by-id", getWalletByUserId);
+router.post("/api/v1/my-history-by-user-id", getMyHistoryByID);
+router.get("/api/v1/get-top-users", getTopRecordsAviator);
 
 module.exports = router;

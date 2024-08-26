@@ -1,8 +1,15 @@
 "user strict";
 var sql = require("../config/db.config");
 // const path = require("path");
-
+const CryptoJS = require('crypto-js');
 module.exports = {
+  deCryptData : (data) => {
+    const value =
+      (data &&
+        CryptoJS.AES.decrypt(data, "anand")?.toString(CryptoJS.enc.Utf8)) ||
+      null;
+    return value && JSON.parse(value);
+  },
   getAlredyPlacedBet: function (params) {
     let query_string =
       "SELECT tr_package FROM tr35_retopup_temp WHERE tr_transid = ? AND tr_user_id = ? AND tr_type = 1";

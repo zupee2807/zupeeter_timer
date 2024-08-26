@@ -34,6 +34,7 @@ app.use(express.json());
 
 const PORT = process.env.PORT || 4000;
 const allRoutes = require("./routes/Routes");
+const { deCryptData } = require("./helper");
 app.use("", allRoutes);
 io.on("connection", (socket) => {});
 
@@ -52,7 +53,7 @@ if (x) {
 
   setTimeout(() => {
     // OneMinTrx.insertOneMinTrxResultByCron();
-    // AviatorStart.aviator_Start_function(io);
+    AviatorStart.aviator_Start_function(io);
     OneMinTrx.generatedTimeEveryAfterEveryOneMinTRX(io);
     OneMinWinGo.generatedTimeEveryAfterEveryOneMin(io);
     ThreeMinWinGo.generatedTimeEveryAfterEveryThreeMin(io);
@@ -68,7 +69,6 @@ const finalRescheduleJob = schedule.scheduleJob(
     FiveMinTrx.generatedTimeEveryAfterEveryFiveMinTRX(io);
   }
 );
-
 app.get("/", (req, res) => {
   res.send(`<h1>server running at port=====> ${PORT}</h1>`);
 });

@@ -1,11 +1,15 @@
-const { result } = require("lodash");
 const { queryDb } = require("../helper/adminHelper");
+const { deCryptData } = require("../helper");
+const moment = require('moment')
+let input_output = null;
 let bet_data = [];
 let already_call_functon = true;
 let total_cashout_temp = 0;
 let total_bet_place_temp = 0;
 let total_candidate = 0;
+let time_to_be_crashed = 0;
 exports.aviator_Start_function = async (io) => {
+  input_output = io;
   async function generateAndSendMessage(
     io,
     loss_amount,
@@ -17,7 +21,6 @@ exports.aviator_Start_function = async (io) => {
 
     let counterboolean = true;
     let find_any_loss_amount_match_with_60_percent = [];
-    // await applyBet.deleteMany({})
     const time = Math.floor(100 + Math.random() * (1200 - 100));
     console.log(time, "this is time to send to the uer or client");
     io.emit("message", time);
@@ -40,10 +43,8 @@ exports.aviator_Start_function = async (io) => {
       }
 
       io.emit("seconds", `${String(milliseconds).padStart(2, "0")}_${seconds}`);
-      // console.log(
-      //   `${String(milliseconds).padStart(2, "0")}_${seconds}`,
-      //   "hiii"
-      // );
+      time_to_be_crashed = Number(`${seconds}.${milliseconds}`);
+
       const newTime = fly_time + 1;
       if (newTime >= time) {
         clearInterval(timerInterval);
@@ -84,14 +85,13 @@ exports.aviator_Start_function = async (io) => {
           clearInterval(crashInterval);
           clearInterval(timerInterval);
           clearInterval(crashInterval);
-          // this_is_recusive_function_for_remove_all_lossAmount_if_counter_greater_than_3(
-          //   total_bet_place_temp
-          // );
+
           already_call_functon &&
             thisFunctonMustBePerFormAfterCrash(
               Number(`${seconds}.${milliseconds}`),
               "counter_jyada_ho_chuka_hai"
             );
+
           already_call_functon = false;
           return;
         } else if (loss_amount <= total_bet_place_temp) {
@@ -100,7 +100,6 @@ exports.aviator_Start_function = async (io) => {
           clearInterval(crashInterval);
           clearInterval(timerInterval);
           clearInterval(crashInterval);
-
           already_call_functon &&
             thisFunctonMustBePerFormAfterCrash(
               Number(`${seconds}.${milliseconds}`),
@@ -143,7 +142,6 @@ exports.aviator_Start_function = async (io) => {
               clearInterval(crashInterval);
               clearInterval(timerInterval);
               clearInterval(crashInterval);
-
               already_call_functon &&
                 thisFunctonMustBePerFormAfterCrash(
                   Number(`${seconds}.${milliseconds}`),
@@ -160,27 +158,14 @@ exports.aviator_Start_function = async (io) => {
                 counterboolean = false;
                 // const query_for_incr_counter =
                 //   "UPDATE aviator_loss_counter SET counter = counter + 1 WHERE id = 1;";
-                const query_for_incr_counter =
-                "UPDATE aviator_loss_counter SET counter = 3 WHERE id = 1;";
-                await queryDb(query_for_incr_counter, []);
+                // const query_for_incr_counter =
+                //   "UPDATE aviator_loss_counter SET counter = 3 WHERE id = 1;";
+                // await queryDb(query_for_incr_counter, []);
               }
             }
           }
         }
       }
-
-      // if (total_candidate <= 1 && total_bet_place_temp >= 100) {
-      //   clearInterval(timerInterval);
-      //   clearInterval(crashInterval);
-      //   clearInterval(timerInterval);
-      //   clearInterval(crashInterval);
-      // already_call_functon &&
-      //   thisFunctonMustBePerFormAfterCrash(
-      //     Number(`${seconds}.${milliseconds}`)
-      //   );
-      //   already_call_functon = false;
-      //   return;
-      // }
 
       /////////////////////////////////// thsi is the calculation of total cashout sum
       if (total_candidate <= 2 && total_bet_place_temp >= 300) {
@@ -308,15 +293,6 @@ exports.aviator_Start_function = async (io) => {
         ]);
       }
 
-      // if (msg === "sixty_percent_se_jyada_ka_crash") {
-      //   console.log("sixty_percent_se_jyada_ka_crash");
-
-      //   const query_for_insert_record_in_loss_table = `INSERT INTO aviator_loss(lossAmount) VALUES(${
-      //     total_cashout_temp - total_bet_place_temp
-      //   })`;
-      //   await queryDb(query_for_insert_record_in_loss_table, []);
-      // }
-
       if (msg === "remove_all_loss_and_set_counter_to_zero") {
         const query_for_truncate_loss_table = `TRUNCATE TABLE aviator_loss;`;
         await queryDb(query_for_truncate_loss_table, []);
@@ -350,6 +326,8 @@ exports.aviator_Start_function = async (io) => {
 
       setTimeout(async () => {
         bet_data = [];
+        time_to_be_crashed = 0;
+        time_to_be_crashed = 0;
         total_cashout_temp = 0;
         total_bet_place_temp = 0;
         total_candidate = 0;
@@ -372,28 +350,39 @@ exports.aviator_Start_function = async (io) => {
 
 exports.betPlacedAviator = async (req, res) => {
   try {
-    const { userid, id, amount, button_type } = req.body;
-    if (!userid || !id || !amount)
+    const { payload } = req.body;
+    const { u_id, id_id, spnt_amount, button_type } = deCryptData(payload);
+    if (!u_id || !id_id || !spnt_amount)
       return res.status(403).json({
         msg: "All field is required",
       });
-    total_bet_place_temp = total_bet_place_temp + amount;
+    total_bet_place_temp = total_bet_place_temp + spnt_amount;
     total_candidate = total_candidate + 1;
     const query_for_bet_place =
-      "CALL `sp_place_bet_aviator`(?,?,?,?,@result_msg); SELECT @result_msg;";
+      "CALL `sp_place_bet_aviator`(?,?,?,?,@result_msg,@email_to_be_sent_out); SELECT @result_msg,@email_to_be_sent_out;";
     const params = [
-      String(userid),
+      String(u_id),
       String(Date.now()),
-      String(amount),
+      String(spnt_amount),
       button_type,
     ];
     await queryDb(query_for_bet_place, params)
       ?.then((result) => {
+        input_output && input_output.emit("user_bet", {
+          id: u_id,
+          email: result?.[1]?.[0]?.["@email_to_be_sent_out"] || "***",
+          amount: spnt_amount,
+          timestamp:moment(Date.now())?.format("YYYY-MM-DD HH:mm:ss"),
+          multiplier:0,
+          amountcashed:0
+
+        });
         return res.status(200).json({
           msg: result?.[1]?.[0]?.["@result_msg"],
         });
       })
       .catch((e) => {
+        console.log(e)
         return res.status(500).json({
           msg: "Something went wrong.",
         });
@@ -408,27 +397,40 @@ exports.betPlacedAviator = async (req, res) => {
 
 exports.cashOutFunction = async (req, res) => {
   try {
-    const { userid, id, amount, multiplier, button_type } = req.body;
-    if (!userid || !id || !amount || !multiplier || !button_type)
+    let time = 0;
+    time = Number(time_to_be_crashed)?.toFixed(2);
+    const { payload } = req.body;
+    const { u_id, id_id, cr_amount, button_type } = deCryptData(payload);
+    if (!u_id || !id_id || !cr_amount || !button_type)
       return res.status(403).json({
         msg: "All field is required",
       });
 
-    total_cashout_temp = total_cashout_temp + amount;
-
+    total_cashout_temp = total_cashout_temp + Number(Number(cr_amount) * time);
+    if (time >= 10)
+      return res.status(200).json({
+        msg: "Your timing is more than expectation.",
+        time: time,
+      });
     const query_for_cash_out =
-      "CALL sp_clear_bet_aviator(?,?,?,?,?,@result_msg); SELECT @result_msg;";
+      "CALL sp_clear_bet_aviator(?,?,?,?,@result_msg,@amount_cras); SELECT @result_msg,@amount_cras;";
     const params = [
-      String(userid),
+      String(u_id),
       String(Date.now()),
-      String(amount),
-      Number(multiplier)?.toFixed(2),
+      Number(time),
       button_type,
     ];
     await queryDb(query_for_cash_out, params)
       .then((result) => {
+        input_output && input_output.emit("user_bet_cashout", {
+          id: u_id,
+          multiplier:time,
+          amountcashed:result?.[1]?.[0]?.["@amount_cras"]
+
+        });
         return res.status(200).json({
           msg: result?.[1]?.[0]?.["@result_msg"],
+          time: time,
         });
       })
       .catch((e) => {
@@ -456,8 +458,6 @@ exports.getGameHistoryAviator = async (req, res) => {
       .catch((e) => {
         console.log("Error in fetching game history");
       });
-    // const data = await GameHistory.find({});
-
     if (!data)
       return res.status(400).json({
         msg: "Data not found",
