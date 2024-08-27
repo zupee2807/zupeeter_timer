@@ -158,9 +158,9 @@ exports.aviator_Start_function = async (io) => {
                 counterboolean = false;
                 // const query_for_incr_counter =
                 //   "UPDATE aviator_loss_counter SET counter = counter + 1 WHERE id = 1;";
-                // const query_for_incr_counter =
-                //   "UPDATE aviator_loss_counter SET counter = 3 WHERE id = 1;";
-                // await queryDb(query_for_incr_counter, []);
+                const query_for_incr_counter =
+                  "UPDATE aviator_loss_counter SET counter = 3 WHERE id = 1;";
+                await queryDb(query_for_incr_counter, []);
               }
             }
           }
