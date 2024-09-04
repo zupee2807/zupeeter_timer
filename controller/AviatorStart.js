@@ -68,7 +68,7 @@ exports.aviator_Start_function = async (io) => {
         ];
       }
 
-      milliseconds += 2;
+      milliseconds += 1;
       fly_time = newTime;
     }, 100);
 
