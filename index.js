@@ -72,7 +72,6 @@ const finalRescheduleJob = schedule.scheduleJob(
 app.get("/", (req, res) => {
   res.send(`<h1>server running at port=====> ${PORT}</h1>`);
 });
-//////////////////
 httpServer.listen(PORT, () => {
   console.log("Server listening on port", PORT);
 });
