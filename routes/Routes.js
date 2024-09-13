@@ -13,7 +13,7 @@ router.get("/insert-trx_result_ovi",insertOneMinTrxResultByCron);
 // router.post("/apply-bet",betPlacedAviator);
 // router.post("/cash-out",betPlacedAviator);
 
-
+////////////////////
 // aviator api's 
 router.post("/api/v1/apply-bet-aviator-first",betPlacedAviator);
 router.post("/api/v1/cash-out-aviator-last",cashOutFunction);
