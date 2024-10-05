@@ -12,93 +12,80 @@ exports.generatedTimeEveryAfterEveryOneMinTRX = (io) => {
 
   try {
     const job = schedule.schedule("* * * * * *", function () {
-    // function handleTimer() {
-    //   clear_interval = setInterval(() => {
-        const currentTime = new Date();
-        const timeToSend =
-          currentTime.getSeconds() > 0
-            ? 60 - currentTime.getSeconds()
-            : currentTime.getSeconds();
-        io.emit("onemintrx", timeToSend);
-        if (timeToSend === 0) {
-          // clearInterval(clear_interval);
-          // handleTimer();
-        }
+      // function handleTimer() {
+      //   clear_interval = setInterval(() => {
+      const currentTime = new Date();
+      const timeToSend =
+        currentTime.getSeconds() > 0
+          ? 60 - currentTime.getSeconds()
+          : currentTime.getSeconds();
+      io.emit("onemintrx", timeToSend);
+      if (timeToSend === 0) {
+        // clearInterval(clear_interval);
+        // handleTimer();
+      }
       // }, 1000);
-    // }
-    // handleTimer();
+      // }
+      // handleTimer();
     });
   } catch (e) {
     console.log(e);
   }
 };
 
-exports.insertOneMinTrxResultByCron = async(request,response) => {
+exports.insertOneMinTrxResultByCron = async (request, response) => {
   let isAlreadyHit = "";
   let result = "";
   let manual_result = "";
   // const insert = schedule.schedule("48 * * * * *", async function () {
-    const datetoAPISend = parseInt(new Date().getTime().toString());
-    const actualtome = soment.tz("Asia/Kolkata");
-    const time = actualtome.add(5, "hours").add(30, "minutes").valueOf();
-    var kill_time;
-    try {
-      datetoAPISend &&
-        (kill_time = setTimeout(async () => {
-          await axios
-            .get(
-              `https://apilist.tronscanapi.com/api/block`,
-              {
-                params: {
-                  sort: "-balance",
-                  start: "0",
-                  limit: "20",
-                  producer: "",
-                  number: "",
-                  start_timestamp: datetoAPISend,
-                  end_timestamp: datetoAPISend,
-                },
+  const datetoAPISend = parseInt(new Date().getTime().toString());
+  const actualtome = soment.tz("Asia/Kolkata");
+  const time = actualtome.add(5, "hours").add(30, "minutes").valueOf();
+  var kill_time;
+  try {
+    datetoAPISend &&
+      (kill_time = setTimeout(async () => {
+        await axios
+          .get(
+            `https://apilist.tronscanapi.com/api/block`,
+            {
+              params: {
+                sort: "-balance",
+                start: "0",
+                limit: "20",
+                producer: "",
+                number: "",
+                start_timestamp: datetoAPISend,
+                end_timestamp: datetoAPISend,
               },
-              {
-                headers: {
-                  "Content-Type": "application/json",
-                },
-              }
-            )
-            .then((res) => {
-              clearTimeout(kill_time);
-              if (res?.data?.data?.[0]) {
-                const obj = res?.data?.data?.[0];
-                try {
-                  insertIntoTrxonetable(
-                    manual_result,
-                    time,
-                    obj,
-                    (err, results) => {
-                      if (err) {
-                        console.error("Error inserting data: ", err);
-                      } else {
-                        console.log("Data inserted successfully: ", results);
-                      }
-                    }
-                  );
-                 
-                } catch (e) {
-                  console.log(e);
-                }
-              } else {
-                getGeneratedTronResultIfFailButRandom(
-                  datetoAPISend,
-                  isAlreadyHit,
-                  result,
+            },
+            {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          )
+          .then((res) => {
+            clearTimeout(kill_time);
+            if (res?.data?.data?.[0]) {
+              const obj = res?.data?.data?.[0];
+              try {
+                insertIntoTrxonetable(
                   manual_result,
-                  time
+                  time,
+                  obj,
+                  (err, results) => {
+                    if (err) {
+                      console.error("Error inserting data: ", err);
+                    } else {
+                      console.log("Data inserted successfully: ", results);
+                    }
+                  }
                 );
+              } catch (e) {
+                console.log(e);
               }
-            })
-            .catch((e) => {
-              console.log("error in tron api");
-              clearTimeout(kill_time);
+            } else {
               getGeneratedTronResultIfFailButRandom(
                 datetoAPISend,
                 isAlreadyHit,
@@ -106,18 +93,30 @@ exports.insertOneMinTrxResultByCron = async(request,response) => {
                 manual_result,
                 time
               );
-            });
-        }, [4000]));
+            }
+          })
+          .catch((e) => {
+            console.log("error in tron api");
+            clearTimeout(kill_time);
+            getGeneratedTronResultIfFailButRandom(
+              datetoAPISend,
+              isAlreadyHit,
+              result,
+              manual_result,
+              time
+            );
+          });
+      }, [4000]));
     return response.status(200).json({
-      msg:"hiii"
-    })
-    } catch (e) {
-      clearTimeout(kill_time);
-      console.log(e);
-      return response.status(400).json({
-        msg:"hiii"
-      })
-    }
+      msg: "hiii",
+    });
+  } catch (e) {
+    clearTimeout(kill_time);
+    console.log(e);
+    return response.status(400).json({
+      msg: "hiii",
+    });
+  }
   // });
 };
 
