@@ -105,7 +105,7 @@ exports.jobRunByCrone = async () => {
           }
         )
         .then(async (result) => {
-          if (result?.data?.data[0]) {
+          if (result?.data?.data?.[0]) {
             const obj = result.data.data[0];
             sendOneMinResultToDatabase(time, obj);
           } else {
