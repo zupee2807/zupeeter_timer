@@ -16,60 +16,117 @@ exports.generatedTimeEveryAfterEveryOneMinTRX = (io) => {
         : currentTime.getSeconds();
     io.emit("onemintrx", timeToSend);
 
-    if (timeToSend === 6) {
-      let timetosend = new Date();
-      timetosend.setSeconds(54);
-      timetosend.setMilliseconds(0);
+    // if (timeToSend === 6) {
+    //   let timetosend = new Date();
+    //   timetosend.setSeconds(54);
+    //   timetosend.setMilliseconds(0);
 
-      let updatedTimestamp = parseInt(timetosend.getTime().toString());
-      const actualtome = soment.tz("Asia/Kolkata");
-      const time = actualtome;
+    //   let updatedTimestamp = parseInt(timetosend.getTime().toString());
+    //   const actualtome = soment.tz("Asia/Kolkata");
+    //   const time = actualtome;
+    //   // .add(5, "hours").add(30, "minutes").valueOf();
+    //   setTimeout(async () => {
+    //     const res = await axios
+    //       .get(
+    //         `https://apilist.tronscanapi.com/api/block`,
+    //         {
+    //           params: {
+    //             sort: "-balance",
+    //             start: "0",
+    //             limit: "20",
+    //             producer: "",
+    //             number: "",
+    //             start_timestamp: updatedTimestamp,
+    //             end_timestamp: updatedTimestamp,
+    //           },
+    //         },
+    //         {
+    //           headers: {
+    //             "Content-Type": "application/json",
+    //           },
+    //         }
+    //       )
+    //       .then(async (result) => {
+    //         if (result?.data?.data[0]) {
+    //           const obj = result.data.data[0];
+    //           sendOneMinResultToDatabase(time, obj);
+    //         } else {
+    //           sendOneMinResultToDatabase(
+    //             time,
+    //             functionToreturnDummyResult(
+    //               Math.floor(Math.random() * (4 - 0 + 1)) + 0
+    //             )
+    //           );
+    //         }
+    //       })
+    //       .catch((e) => {
+    //         console.log("error in tron api");
+    //         sendOneMinResultToDatabase(
+    //           time,
+    //           functionToreturnDummyResult(
+    //             Math.floor(Math.random() * (4 - 0 + 1)) + 0
+    //           )
+    //         );
+    //       });
+    //   }, [4000]);
+    // }
+  });
+};
+
+exports.jobRunByCrone = async () => {
+  schedule.schedule("54 * * * * *", function () {
+    let timetosend = new Date();
+    timetosend.setSeconds(54);
+    timetosend.setMilliseconds(0);
+
+    let updatedTimestamp = parseInt(timetosend.getTime().toString());
+    const actualtome = soment.tz("Asia/Kolkata");
+    const time = actualtome;
     // .add(5, "hours").add(30, "minutes").valueOf();
-      setTimeout(async () => {
-        const res = await axios
-          .get(
-            `https://apilist.tronscanapi.com/api/block`,
-            {
-              params: {
-                sort: "-balance",
-                start: "0",
-                limit: "20",
-                producer: "",
-                number: "",
-                start_timestamp: updatedTimestamp,
-                end_timestamp: updatedTimestamp,
-              },
+    setTimeout(async () => {
+      const res = await axios
+        .get(
+          `https://apilist.tronscanapi.com/api/block`,
+          {
+            params: {
+              sort: "-balance",
+              start: "0",
+              limit: "20",
+              producer: "",
+              number: "",
+              start_timestamp: updatedTimestamp,
+              end_timestamp: updatedTimestamp,
             },
-            {
-              headers: {
-                "Content-Type": "application/json",
-              },
-            }
-          )
-          .then(async (result) => {
-            if (result?.data?.data[0]) {
-              const obj = result.data.data[0];
-              sendOneMinResultToDatabase(time, obj);
-            } else {
-              sendOneMinResultToDatabase(
-                time,
-                functionToreturnDummyResult(
-                  Math.floor(Math.random() * (4 - 0 + 1)) + 0
-                )
-              );
-            }
-          })
-          .catch((e) => {
-            console.log("error in tron api");
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        )
+        .then(async (result) => {
+          if (result?.data?.data[0]) {
+            const obj = result.data.data[0];
+            sendOneMinResultToDatabase(time, obj);
+          } else {
             sendOneMinResultToDatabase(
               time,
               functionToreturnDummyResult(
                 Math.floor(Math.random() * (4 - 0 + 1)) + 0
               )
             );
-          });
-      }, [4000]);
-    }
+          }
+        })
+        .catch((e) => {
+          console.log("error in tron api");
+          sendOneMinResultToDatabase(
+            time,
+            functionToreturnDummyResult(
+              Math.floor(Math.random() * (4 - 0 + 1)) + 0
+            )
+          );
+        });
+    }, [4000]);
   });
 };
 
