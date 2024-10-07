@@ -1,6 +1,6 @@
 const { queryDb } = require("../helper/adminHelper");
 const { deCryptData } = require("../helper");
-const moment = require('moment')
+const moment = require("moment");
 let input_output = null;
 let bet_data = [];
 let already_call_functon = true;
@@ -22,7 +22,7 @@ exports.aviator_Start_function = async (io) => {
     let counterboolean = true;
     let find_any_loss_amount_match_with_60_percent = [];
     const time = Math.floor(100 + Math.random() * (1200 - 100));
-    console.log(time, "this is time to send to the uer or client");
+    // console.log(time, "this is time to send to the uer or client");
     io.emit("message", time);
     io.emit("crash", false);
     let fly_time = 0;
@@ -196,7 +196,7 @@ exports.aviator_Start_function = async (io) => {
       }
       ////////////////////// conndition is that means agar cashout 60% se jyada huaa to crash kra do///////////////
       if (total_cashout_temp > total_amount_ka_60_percent) {
-        console.log("Function is called now 60 percent se jyada");
+        // console.log("Function is called now 60 percent se jyada");
         clearInterval(timerInterval);
         clearInterval(crashInterval);
         clearInterval(timerInterval);
@@ -253,7 +253,7 @@ exports.aviator_Start_function = async (io) => {
       clearInterval(crashInterval);
       clearInterval(timerInterval);
       clearInterval(crashInterval);
-      console.log("thisFunctonMustBePerFormAfterCrash HOOOOOOO crached");
+      // console.log("thisFunctonMustBePerFormAfterCrash HOOOOOOO crached");
       // const round = await GameRound?.find({});
       io.emit("crash", true);
 
@@ -368,21 +368,21 @@ exports.betPlacedAviator = async (req, res) => {
     ];
     await queryDb(query_for_bet_place, params)
       ?.then((result) => {
-        input_output && input_output.emit("user_bet", {
-          id: u_id,
-          email: result?.[1]?.[0]?.["@email_to_be_sent_out"] || "***",
-          amount: spnt_amount,
-          timestamp:moment(Date.now())?.format("YYYY-MM-DD HH:mm:ss"),
-          multiplier:0,
-          amountcashed:0
-
-        });
+        input_output &&
+          input_output.emit("user_bet", {
+            id: u_id,
+            email: result?.[1]?.[0]?.["@email_to_be_sent_out"] || "***",
+            amount: spnt_amount,
+            timestamp: moment(Date.now())?.format("YYYY-MM-DD HH:mm:ss"),
+            multiplier: 0,
+            amountcashed: 0,
+          });
         return res.status(200).json({
           msg: result?.[1]?.[0]?.["@result_msg"],
         });
       })
       .catch((e) => {
-        console.log(e)
+        console.log(e);
         return res.status(500).json({
           msg: "Something went wrong.",
         });
@@ -422,12 +422,12 @@ exports.cashOutFunction = async (req, res) => {
     ];
     await queryDb(query_for_cash_out, params)
       .then((result) => {
-        input_output && input_output.emit("user_bet_cashout", {
-          id: u_id,
-          multiplier:time,
-          amountcashed:result?.[1]?.[0]?.["@amount_cras"]
-
-        });
+        input_output &&
+          input_output.emit("user_bet_cashout", {
+            id: u_id,
+            multiplier: time,
+            amountcashed: result?.[1]?.[0]?.["@amount_cras"],
+          });
         return res.status(200).json({
           msg: result?.[1]?.[0]?.["@result_msg"],
           time: time,
@@ -526,7 +526,7 @@ exports.getWalletByUserId = async (req, res) => {
 exports.getMyHistoryByID = async (req, res) => {
   try {
     const { user_id_node } = req.body;
-    console.log("HII");
+    // console.log("HII");
     if (!user_id_node)
       return res.status(400).json({
         msg: "Please provider user id",
