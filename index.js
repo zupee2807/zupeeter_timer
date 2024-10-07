@@ -65,8 +65,8 @@ if (x) {
 const finalRescheduleJob = schedule.scheduleJob(
   "15,30,45,0 * * * *",
   function () {
-    ThreeMinTrx.generatedTimeEveryAfterEveryThreeMinTRX(io);
-    FiveMinTrx.generatedTimeEveryAfterEveryFiveMinTRX(io);
+    // ThreeMinTrx.generatedTimeEveryAfterEveryThreeMinTRX(io);
+    // FiveMinTrx.generatedTimeEveryAfterEveryFiveMinTRX(io);
   }
 );
 
