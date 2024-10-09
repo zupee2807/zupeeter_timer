@@ -40,7 +40,7 @@ io.on("connection", (socket) => {});
 
 let x = true;
 let trx = true;
-//////////////////////
+
 if (x) {
   console.log("Waiting for the next minute to start...");
   const now = new Date();
@@ -69,7 +69,7 @@ const finalRescheduleJob = schedule.scheduleJob(
     // FiveMinTrx.generatedTimeEveryAfterEveryFiveMinTRX(io);
   }
 );
-
+//////
 app.get("/", (req, res) => {
   res.send(`<h1>server running at port=====> ${PORT}</h1>`);
 });
