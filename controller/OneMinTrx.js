@@ -107,13 +107,14 @@ exports.jobRunByCrone = async () => {
         .then(async (result) => {
           if (result?.data?.data?.[0]) {
             const obj = result.data.data[0];
-            sendOneMinResultToDatabase(time, obj);
+            sendOneMinResultToDatabase(time, obj, updatedTimestamp);
           } else {
             sendOneMinResultToDatabase(
               time,
               functionToreturnDummyResult(
                 Math.floor(Math.random() * (4 - 0 + 1)) + 0
-              )
+              ),
+              updatedTimestamp
             );
           }
         })
@@ -123,14 +124,15 @@ exports.jobRunByCrone = async () => {
             time,
             functionToreturnDummyResult(
               Math.floor(Math.random() * (4 - 0 + 1)) + 0
-            )
+            ),
+            updatedTimestamp
           );
         });
     }, [4000]);
   });
 };
 
-const sendOneMinResultToDatabase = async (time, obj) => {
+const sendOneMinResultToDatabase = async (time, obj, updatedTimestamp) => {
   const newString = obj.hash;
   let num = null;
   for (let i = newString.length - 1; i >= 0; i--) {
@@ -145,7 +147,7 @@ const sendOneMinResultToDatabase = async (time, obj) => {
     String(moment(time).format("HH:mm:ss")),
     1,
     `**${obj.hash.slice(-4)}`,
-    JSON.stringify(obj),
+    JSON.stringify({ ...obj, updatedTimestamp: updatedTimestamp }),
     `${obj.hash.slice(-5)}`,
     obj.number,
   ])
