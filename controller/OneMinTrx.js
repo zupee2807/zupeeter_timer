@@ -75,11 +75,11 @@ exports.generatedTimeEveryAfterEveryOneMinTRX = (io) => {
 
 exports.jobRunByCrone = async () => {
   schedule.schedule("54 * * * * *", async function () {
-    let timetosend = new Date();
-    timetosend.setSeconds(54);
-    timetosend.setMilliseconds(0);
+    // let timetosend = new Date();
+    // timetosend.setSeconds(54);
+    // timetosend.setMilliseconds(0);
 
-    let updatedTimestamp = parseInt(timetosend.getTime().toString());
+    // let updatedTimestamp = parseInt(timetosend.getTime().toString());
 
     const actualtome = soment.tz("Asia/Kolkata");
     const time = actualtome;
@@ -88,7 +88,7 @@ exports.jobRunByCrone = async () => {
       "SELECT `utc_time` FROM `trx_UTC_timer` ORDER BY `id` DESC LIMIT 1;",
       []
     );
-    let time_to_Tron = getTime?.[0]?.utc_time || updatedTimestamp;
+    let time_to_Tron = getTime?.[0]?.utc_time;
     setTimeout(async () => {
       const res = await axios
         .get(
