@@ -35,7 +35,7 @@ exports.jobRunByCrone = async () => {
     );
     let time_to_Tron = getTime?.[0]?.utc_time;
     setTimeout(() => {
-      callTronAPI(time_to_Tron, time);
+      callTronAPISecond(time_to_Tron, time);
       recurstionCount = 0;
     }, 5000);
   });
@@ -92,14 +92,13 @@ async function callTronAPI(time_to_Tron, time) {
     });
 }
 async function callTronAPISecond(time_to_Tron, time) {
-  console.log("call second api");
   await axios
     .get(
       `https://apilist.tronscan.org/api/block`,
       {
         params: {
-          sort: "-balance",
-          limit: 1,
+          sort: "-timestamp",
+          limit: 10,
           start: time_to_Tron,
           end: time_to_Tron,
         },
@@ -112,12 +111,14 @@ async function callTronAPISecond(time_to_Tron, time) {
     )
     .then(async (result) => {
       if (result?.data?.data?.[0]) {
-        const obj = result.data.data[0];
+        const obj = result.data.data?.find(
+          (item) => item?.timestamp == time_to_Tron
+        );
         recurstionCount = 0;
         sendOneMinResultToDatabase(time, obj, time_to_Tron);
       } else {
         setTimeout(() => {
-          callTronAPI(time_to_Tron, time);
+          callTronAPISecond(time_to_Tron, time);
         }, 1500);
       }
     })
@@ -126,7 +127,7 @@ async function callTronAPISecond(time_to_Tron, time) {
       if (recurstionCount <= 4) {
         setTimeout(() => {
           recurstionCount = recurstionCount + 1;
-          callTronAPI(time_to_Tron, time);
+          callTronAPISecond(time_to_Tron, time);
         }, 1000);
       } else {
         sendOneMinResultToDatabase(
