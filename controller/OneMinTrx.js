@@ -15,7 +15,7 @@ exports.generatedTimeEveryAfterEveryOneMinTRX = (io) => {
         ? 60 - currentTime.getSeconds()
         : currentTime.getSeconds();
     io.emit("onemintrx", timeToSend);
-    if (timeToSend === 6) jobRunByCrone();
+    // if (timeToSend === 6) jobRunByCrone();
   });
 };
 
