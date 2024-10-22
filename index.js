@@ -54,7 +54,7 @@ if (x) {
   setTimeout(() => {
     // OneMinTrx.jobRunByCrone();
     // AviatorStart.aviator_Start_function(io);
-    OneMinTrx.generatedTimeEveryAfterEveryOneMinTRX(io);
+    // OneMinTrx.generatedTimeEveryAfterEveryOneMinTRX(io);
     // OneMinWinGo.generatedTimeEveryAfterEveryOneMin(io);
 
     // ThreeMinWinGo.generatedTimeEveryAfterEveryThreeMin(io);
