@@ -54,9 +54,8 @@ if (x) {
   setTimeout(() => {
     // OneMinTrx.jobRunByCrone();
     // AviatorStart.aviator_Start_function(io);
-    OneMinTrx.generatedTimeEveryAfterEveryOneMinTRX(io);
+    // OneMinTrx.generatedTimeEveryAfterEveryOneMinTRX(io);
     // OneMinWinGo.generatedTimeEveryAfterEveryOneMin(io);
-
 
     // ThreeMinWinGo.generatedTimeEveryAfterEveryThreeMin(io);
     // FiveMinWinGo.generatedTimeEveryAfterEveryFiveMin(io);
@@ -72,14 +71,6 @@ const finalRescheduleJob = schedule.scheduleJob(
   }
 );
 
-
-
-let timetosend = new Date();
-    timetosend.setSeconds(54);
-    timetosend.setMilliseconds(0);
-    
-    let updatedTimestamp = parseInt(timetosend.getTime().toString());
-console.log(updatedTimestamp);
 
 app.get("/", (req, res) => {
   res.send(`<h1>server running at port=====> ${PORT}</h1>`);
