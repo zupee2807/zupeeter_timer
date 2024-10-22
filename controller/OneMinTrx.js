@@ -142,8 +142,7 @@ async function callTronAPISecond(time_to_Tron, time) {
 }
 
 const sendOneMinResultToDatabase = async (time, obj, updatedTimestamp) => {
-  console.log(obj);
-  return;
+
   const newString = obj.hash;
   let num = null;
   for (let i = newString.length - 1; i >= 0; i--) {
