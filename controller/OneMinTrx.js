@@ -15,61 +15,6 @@ exports.generatedTimeEveryAfterEveryOneMinTRX = (io) => {
         ? 60 - currentTime.getSeconds()
         : currentTime.getSeconds();
     io.emit("onemintrx", timeToSend);
-
-    // if (timeToSend === 6) {
-    //   let timetosend = new Date();
-    //   timetosend.setSeconds(54);
-    //   timetosend.setMilliseconds(0);
-
-    //   let updatedTimestamp = parseInt(timetosend.getTime().toString());
-    //   const actualtome = soment.tz("Asia/Kolkata");
-    //   const time = actualtome;
-    //   // .add(5, "hours").add(30, "minutes").valueOf();
-    //   setTimeout(async () => {
-    //     const res = await axios
-    //       .get(
-    //         `https://apilist.tronscanapi.com/api/block`,
-    //         {
-    //           params: {
-    //             sort: "-balance",
-    //             start: "0",
-    //             limit: "20",
-    //             producer: "",
-    //             number: "",
-    //             start_timestamp: updatedTimestamp,
-    //             end_timestamp: updatedTimestamp,
-    //           },
-    //         },
-    //         {
-    //           headers: {
-    //             "Content-Type": "application/json",
-    //           },
-    //         }
-    //       )
-    //       .then(async (result) => {
-    //         if (result?.data?.data[0]) {
-    //           const obj = result.data.data[0];
-    //           sendOneMinResultToDatabase(time, obj);
-    //         } else {
-    //           sendOneMinResultToDatabase(
-    //             time,
-    //             functionToreturnDummyResult(
-    //               Math.floor(Math.random() * (4 - 0 + 1)) + 0
-    //             )
-    //           );
-    //         }
-    //       })
-    //       .catch((e) => {
-    //         console.log("error in tron api");
-    //         sendOneMinResultToDatabase(
-    //           time,
-    //           functionToreturnDummyResult(
-    //             Math.floor(Math.random() * (4 - 0 + 1)) + 0
-    //           )
-    //         );
-    //       });
-    //   }, [4000]);
-    // }
   });
 };
 
@@ -122,34 +67,26 @@ async function callTronAPI(time_to_Tron, time) {
       } else {
         console.log("inside the else", time_to_Tron);
         setTimeout(() => {
-          recurstionCount = recurstionCount + 1;
           callTronAPI(time_to_Tron, time);
         }, 1500);
-        // if (recurstionCount <= 4) {
-        //   setTimeout(() => {
-        //     recurstionCount = recurstionCount + 1;
-        //     callTronAPI(time_to_Tron, time);
-        //   }, 1000);
-        // } else {
-        //   sendOneMinResultToDatabase(
-        //     time,
-        //     functionToreturnDummyResult(
-        //       Math.floor(Math.random() * (4 - 0 + 1)) + 0
-        //     ),
-        //     time_to_Tron
-        //   );
-        // }
       }
     })
     .catch((e) => {
       console.log("error in tron api");
-      sendOneMinResultToDatabase(
-        time,
-        functionToreturnDummyResult(
-          Math.floor(Math.random() * (4 - 0 + 1)) + 0
-        ),
-        time_to_Tron
-      );
+      if (recurstionCount <= 4) {
+        setTimeout(() => {
+          recurstionCount = recurstionCount + 1;
+          callTronAPI(time_to_Tron, time);
+        }, 1000);
+      } else {
+        sendOneMinResultToDatabase(
+          time,
+          functionToreturnDummyResult(
+            Math.floor(Math.random() * (4 - 0 + 1)) + 0
+          ),
+          time_to_Tron
+        );
+      }
     });
 }
 
