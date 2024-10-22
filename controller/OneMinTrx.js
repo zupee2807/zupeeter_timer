@@ -37,16 +37,68 @@ exports.jobRunByCrone = async () => {
     setTimeout(() => {
       callTronAPI(time_to_Tron, time);
       recurstionCount = 0;
-    }, 4000);
+    }, 5000);
   });
 };
 async function callTronAPI(time_to_Tron, time) {
   await axios
     .get(
+      `https://apilist.tronscanapi.com/api/block`,
+      {
+        params: {
+          sort: "-balance",
+          start: "0",
+          limit: "20",
+          producer: "",
+          number: "",
+          start_timestamp: time_to_Tron,
+          end_timestamp: time_to_Tron,
+        },
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    )
+    .then(async (result) => {
+      if (result?.data?.data?.[0]) {
+        const obj = result.data.data[0];
+        recurstionCount = 0;
+        sendOneMinResultToDatabase(time, obj, time_to_Tron);
+      } else {
+        console.log("inside the else", time_to_Tron);
+        setTimeout(() => {
+          callTronAPISecond(time_to_Tron, time);
+        }, 1000);
+      }
+    })
+    .catch((e) => {
+      console.log("error in tron api");
+      if (recurstionCount <= 4) {
+        setTimeout(() => {
+          recurstionCount = recurstionCount + 1;
+          callTronAPI(time_to_Tron, time);
+        }, 1000);
+      } else {
+        sendOneMinResultToDatabase(
+          time,
+          functionToreturnDummyResult(
+            Math.floor(Math.random() * (4 - 0 + 1)) + 0
+          ),
+          time_to_Tron
+        );
+      }
+    });
+}
+async function callTronAPISecond(time_to_Tron, time) {
+  console.log("call second api");
+  await axios
+    .get(
       `https://apilist.tronscan.org/api/block`,
       {
         params: {
-          sort: "-timestamp",
+          sort: "-balance",
           limit: 1,
           start: time_to_Tron,
           end: time_to_Tron,
@@ -60,12 +112,10 @@ async function callTronAPI(time_to_Tron, time) {
     )
     .then(async (result) => {
       if (result?.data?.data?.[0]) {
-        console.log("inside the if");
         const obj = result.data.data[0];
         recurstionCount = 0;
         sendOneMinResultToDatabase(time, obj, time_to_Tron);
       } else {
-        console.log("inside the else", time_to_Tron);
         setTimeout(() => {
           callTronAPI(time_to_Tron, time);
         }, 1500);
@@ -114,22 +164,3 @@ const sendOneMinResultToDatabase = async (time, obj, updatedTimestamp) => {
       console.log(e);
     });
 };
-// .get(
-//   `https://apilist.tronscanapi.com/api/block`,
-//   {
-//     params: {
-//       sort: "-balance",
-//       start: "0",
-//       limit: "20",
-//       producer: "",
-//       number: "",
-//       start_timestamp: time_to_Tron,
-//       end_timestamp: time_to_Tron,
-//     },
-//   },
-//   {
-//     headers: {
-//       "Content-Type": "application/json",
-//     },
-//   }
-// )

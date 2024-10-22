@@ -56,6 +56,8 @@ if (x) {
     AviatorStart.aviator_Start_function(io);
     OneMinTrx.generatedTimeEveryAfterEveryOneMinTRX(io);
     OneMinWinGo.generatedTimeEveryAfterEveryOneMin(io);
+
+
     // ThreeMinWinGo.generatedTimeEveryAfterEveryThreeMin(io);
     // FiveMinWinGo.generatedTimeEveryAfterEveryFiveMin(io);
     x = false;
