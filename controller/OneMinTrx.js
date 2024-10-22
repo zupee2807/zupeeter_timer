@@ -28,6 +28,7 @@ exports.jobRunByCrone = async () => {
 
     const actualtome = soment.tz("Asia/Kolkata");
     const time = actualtome;
+    console.log(time,"hitting time")
     // .add(5, "hours").add(30, "minutes").valueOf();
     const getTime = await queryDb(
       "SELECT `utc_time` FROM `trx_UTC_timer` ORDER BY `id` DESC LIMIT 1;",
