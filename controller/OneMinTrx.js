@@ -134,7 +134,7 @@ exports.jobRunByCrone = async () => {
             time_to_Tron
           );
         });
-    }, [4000]);
+    }, [5000]);
   });
 };
 
@@ -161,12 +161,4 @@ const sendOneMinResultToDatabase = async (time, obj, updatedTimestamp) => {
     .catch((e) => {
       console.log(e);
     });
-
-  // const queryToSendResult = `CALL trx_clear_bet(?);`;
-
-  // await queryDb(queryToSendResult, [Number(num)])
-  //   .then((result) => {})
-  //   .catch((e) => {
-  //     console.log("Something went wrong in clear one bet trx");
-  //   });
 };

@@ -26,7 +26,7 @@ module.exports = {
   functionToreturnDummyResult: function (index) {
     const array = [
       {
-        hash: "0000000003c9a564d25473a75f10663e28ec2af72e6e5f16d413ddekjdsflja45",
+        hash: "0000000003c9a564d25473a75f10663e28ec2af72e6e5f16d413ddekjdsfljph21",
         number: 65234895,
         size: 68325,
         timestamp: 1721285448000,
@@ -98,7 +98,7 @@ module.exports = {
       },
 
       {
-        hash: "0000000003c9a564d25473a75f10663e28ec2af72e6e5f16d413dde9244fgh145",
+        hash: "0000000003c9a564d25473a75f10663e28ec2af72e6e5f16d413dde9244fg357",
         number: 68745213,
         size: 68325,
         timestamp: 1721285448000,
@@ -133,7 +133,7 @@ module.exports = {
         revert: false,
       },
       {
-        hash: "0000000003c9a564d25473a75f10663e28ec2af72e6e5f16d413dde92dgfhdfh451",
+        hash: "0000000003c9a564d25473a75f10663e28ec2af72e6e5f16d413dde92dgfhdfjh56",
         number: 69532458,
         size: 68325,
         timestamp: 1721285448000,
@@ -168,7 +168,7 @@ module.exports = {
         revert: false,
       },
       {
-        hash: "0000000003c9a564d25473a75f10663e28ec2af72e6e5f16d413dde92dgfhdfh451",
+        hash: "0000000003c9a564d25473a75f10663e28ec2af72e6e5f16d413dde92dgfhdfgfr43",
         number: 69532458,
         size: 68325,
         timestamp: 1721285448000,
@@ -203,7 +203,7 @@ module.exports = {
         revert: false,
       },
       {
-        hash: "0000000003c9a564d25473a75f10663e28ec2af72e6e5f16d413ddekjdsflja45",
+        hash: "0000000003c9a564d25473a75f10663e28ec2af72e6e5f16d413ddekjdsfljh78",
         number: 65234895,
         size: 68325,
         timestamp: 1721285448000,
@@ -238,7 +238,7 @@ module.exports = {
         revert: false,
       },
       {
-        hash: "0000000003c9a564d25473a75f10663e28ec2af72e6e5f16d413ddekjdsflja45",
+        hash: "0000000003c9a564d25473a75f10663e28ec2af72e6e5f16d413ddekjdsflht04",
         number: 65234895,
         size: 68325,
         timestamp: 1721285448000,
