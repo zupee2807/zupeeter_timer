@@ -15,31 +15,33 @@ exports.generatedTimeEveryAfterEveryOneMinTRX = (io) => {
         ? 60 - currentTime.getSeconds()
         : currentTime.getSeconds();
     io.emit("onemintrx", timeToSend);
+    if (timeToSend === 6) jobRunByCrone();
   });
 };
 
-exports.jobRunByCrone = async () => {
-  schedule.schedule("54 * * * * *", async function () {
-    // let timetosend = new Date();
-    // timetosend.setSeconds(54);
-    // timetosend.setMilliseconds(0);
+const jobRunByCrone = async () => {
+  // schedule.schedule("54 * * * * *", async function () {
+  // let timetosend = new Date();
+  // timetosend.setSeconds(54);
+  // timetosend.setMilliseconds(0);
 
-    // let updatedTimestamp = parseInt(timetosend.getTime().toString());
+  // let updatedTimestamp = parseInt(timetosend.getTime().toString());
 
-    const actualtome = soment.tz("Asia/Kolkata");
-    const time = actualtome;
-    console.log(time, "hitting time");
-    // .add(5, "hours").add(30, "minutes").valueOf();
-    const getTime = await queryDb(
-      "SELECT `utc_time` FROM `trx_UTC_timer` ORDER BY `id` DESC LIMIT 1;",
-      []
-    );
-    let time_to_Tron = getTime?.[0]?.utc_time;
-    // setTimeout(() => {
-      callTronAPISecond(time_to_Tron, time);
-      recurstionCount = 0;
-    // }, 5000);
-  });
+  const actualtome = soment.tz("Asia/Kolkata");
+  const time = actualtome;
+  // .add(5, "hours").add(30, "minutes").valueOf();
+  const getTime = await queryDb(
+    "SELECT `utc_time` FROM `trx_UTC_timer` ORDER BY `id` DESC LIMIT 1;",
+    []
+  );
+  let time_to_Tron = getTime?.[0]?.utc_time;
+  console.log(time, "hitting time", time_to_Tron);
+
+  setTimeout(() => {
+    callTronAPISecond(time_to_Tron, time);
+    recurstionCount = 0;
+  }, 5000);
+  // });
 };
 async function callTronAPI(time_to_Tron, time) {
   await axios
