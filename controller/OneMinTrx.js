@@ -20,21 +20,20 @@ exports.generatedTimeEveryAfterEveryOneMinTRX = (io) => {
 
 exports.jobRunByCrone = async () => {
   schedule.schedule("54 * * * * *", async function () {
-    let timetosend = new Date();
-    timetosend.setSeconds(54);
-    timetosend.setMilliseconds(0);
+    // let timetosend = new Date();
+    // timetosend.setSeconds(54);
+    // timetosend.setMilliseconds(0);
 
-    let updatedTimestamp = parseInt(timetosend.getTime().toString());
+    // let updatedTimestamp = parseInt(timetosend.getTime().toString());
 
     const actualtome = soment.tz("Asia/Kolkata");
     const time = actualtome;
     // .add(5, "hours").add(30, "minutes").valueOf();
-    // const getTime = await queryDb(
-    //   "SELECT `utc_time` FROM `trx_UTC_timer` ORDER BY `id` DESC LIMIT 1;",
-    //   []
-    // );
-    let time_to_Tron = updatedTimestamp;
-    // getTime?.[0]?.utc_time;
+    const getTime = await queryDb(
+      "SELECT `utc_time` FROM `trx_UTC_timer` ORDER BY `id` DESC LIMIT 1;",
+      []
+    );
+    let time_to_Tron = getTime?.[0]?.utc_time;
     setTimeout(() => {
       callTronAPISecond(time_to_Tron, time);
       recurstionCount = 0;
@@ -119,7 +118,9 @@ async function callTronAPISecond(time_to_Tron, time) {
     .then(async (result) => {
       if (
         result?.data?.data?.[0] &&
-        result?.data?.data?.find((block) => block.timestamp === Number(time_to_Tron))
+        result?.data?.data?.find(
+          (block) => block.timestamp === Number(time_to_Tron)
+        )
       ) {
         recurstionCount = 0;
         const obj = result?.data?.data?.find(
