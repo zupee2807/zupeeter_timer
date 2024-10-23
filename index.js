@@ -52,7 +52,6 @@ if (x) {
   );
 
   setTimeout(() => {
-    OneMinTrx.jobRunByCrone();
     AviatorStart.aviator_Start_function(io);
     OneMinTrx.generatedTimeEveryAfterEveryOneMinTRX(io);
     // OneMinWinGo.generatedTimeEveryAfterEveryOneMin(io);
@@ -63,6 +62,7 @@ if (x) {
   }, secondsUntilNextMinute * 1000);
 }
 
+OneMinTrx.jobRunByCrone();
 const finalRescheduleJob = schedule.scheduleJob(
   "15,30,45,0 * * * *",
   function () {

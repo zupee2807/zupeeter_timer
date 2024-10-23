@@ -66,20 +66,21 @@ async function callTronAPISecond(time_to_Tron, time) {
         const obj = result?.data?.data?.[0];
         sendOneMinResultToDatabase(time, obj, time_to_Tron);
       } else {
-        console.log("recursion called");
+        console.log("recursion called", time_to_Tron);
         setTimeout(async () => {
           await callTronAPISecond(time_to_Tron, time);
         }, 1500);
       }
     })
     .catch((e) => {
-      console.log("error in tron api");
+      console.log("error in tron api", time_to_Tron);
       if (recurstionCount <= 4) {
         setTimeout(() => {
           recurstionCount = recurstionCount + 1;
           callTronAPISecond(time_to_Tron, time);
         }, 1000);
       } else {
+        console.log("else function is called", time_to_Tron);
         sendOneMinResultToDatabase(
           time,
           functionToreturnDummyResult(
