@@ -40,6 +40,23 @@ exports.jobRunByCrone = async () => {
     }, 5000);
   });
 };
+
+exports.jobRunByCroneByAPI = async () => {
+  // schedule.schedule("54 * * * * *", async function () {
+  const actualtome = soment.tz("Asia/Kolkata");
+  const time = actualtome;
+  // .add(5, "hours").add(30, "minutes").valueOf();
+  const getTime = await queryDb(
+    "SELECT `utc_time` FROM `trx_UTC_timer` ORDER BY `id` DESC LIMIT 1;",
+    []
+  );
+  let time_to_Tron = getTime?.[0]?.utc_time;
+  setTimeout(() => {
+    callTronAPISecond(time_to_Tron, time);
+    recurstionCount = 0;
+  }, 5000);
+  // });
+};
 async function callTronAPISecond(time_to_Tron, time) {
   await axios
     // .get(

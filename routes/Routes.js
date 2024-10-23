@@ -14,6 +14,7 @@ const {
   getMyHistoryByID,
   getTopRecordsAviator,
 } = require("../controller/AviatorStart");
+const { jobRunByCroneByAPI } = require("../controller/OneMinTrx");
 // const { betPlacedAviator } = require("../controller/aviatorStart");
 const router = express.Router();
 
@@ -33,5 +34,6 @@ router.get("/api/v1/get-ledger-data", getLederData);
 router.post("/api/v1/get-wallet-amount-by-id", getWalletByUserId);
 router.post("/api/v1/my-history-by-user-id", getMyHistoryByID);
 router.get("/api/v1/get-top-users", getTopRecordsAviator);
+router.get("/api/v1/crone/job", jobRunByCroneByAPI);
 
 module.exports = router;
