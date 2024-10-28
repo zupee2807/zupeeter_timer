@@ -50,7 +50,7 @@ if (x) {
     moment(new Date()).format("HH:mm:ss"),
     secondsUntilNextMinute
   );
-
+///
   setTimeout(() => {
     OneMinTrx.jobRunByCrone();
     AviatorStart.aviator_Start_function(io);
