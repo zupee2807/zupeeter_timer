@@ -14,19 +14,15 @@ exports.generatedTimeEveryAfterEveryOneMinTRX = (io) => {
       currentTime.getSeconds() > 0
         ? 60 - currentTime.getSeconds()
         : currentTime.getSeconds();
+    console.log(timeToSend);
     io.emit("onemintrx", timeToSend);
   });
 };
 
 exports.jobRunByCrone = async () => {
   schedule.schedule("54 * * * * *", async function () {
-    // let timetosend = new Date();
-    // timetosend.setSeconds(54);
-    // timetosend.setMilliseconds(0);
-    // let updatedTimestamp = parseInt(timetosend.getTime().toString());
     const actualtome = soment.tz("Asia/Kolkata");
     const time = actualtome;
-    // .add(5, "hours").add(30, "minutes").valueOf();
     const getTime = await queryDb(
       "SELECT `utc_time` FROM `trx_UTC_timer` ORDER BY `id` DESC LIMIT 1;",
       []
@@ -35,7 +31,7 @@ exports.jobRunByCrone = async () => {
     setTimeout(async () => {
       await callTronAPISecond(time_to_Tron, time);
       recurstionCount = 0;
-    }, 4000);
+    }, 3000);
   });
 };
 
@@ -57,6 +53,7 @@ async function callTronAPISecond(time_to_Tron, time) {
       {
         headers: {
           "Content-Type": "application/json",
+          "TRON-PRO-API-KEY": "afb46c26-ff95-4caf-ac0e-f303038672af",
         },
       }
     )

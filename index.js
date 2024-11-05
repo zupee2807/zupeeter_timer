@@ -3,6 +3,7 @@ const http = require("http");
 const { Server } = require("socket.io");
 const cors = require("cors");
 const moment = require("moment");
+const soment = require("moment-timezone");
 require("dotenv").config();
 const schedule = require("node-schedule");
 const OneMinTrx = require("./controller/OneMinTrx");
@@ -44,13 +45,15 @@ let trx = true;
 if (x) {
   console.log("Waiting for the next minute to start...");
   const now = new Date();
-  const secondsUntilNextMinute = 60 - now.getSeconds();
+  const nowIST = soment(now).tz("Asia/Kolkata");
+  const currentSecond = nowIST.seconds();
+  const secondsUntilNextMinute = 60 - currentSecond;
   console.log(
     "start after ",
     moment(new Date()).format("HH:mm:ss"),
     secondsUntilNextMinute
   );
-///
+  ///
   setTimeout(() => {
     OneMinTrx.jobRunByCrone();
     AviatorStart.aviator_Start_function(io);
