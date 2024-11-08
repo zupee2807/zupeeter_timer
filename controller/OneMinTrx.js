@@ -34,7 +34,7 @@ exports.jobRunByCrone = async () => {
     }, 3000);
   });
 };
-
+//////////
 async function callTronAPISecond(time_to_Tron, time) {
   await axios
     .get(
