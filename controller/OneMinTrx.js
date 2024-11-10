@@ -111,3 +111,4 @@ const sendOneMinResultToDatabase = async (time, obj, updatedTimestamp) => {
       console.log(e);
     });
 };
+///////
